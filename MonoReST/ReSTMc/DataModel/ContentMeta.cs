@@ -56,6 +56,10 @@ namespace Emc.Documentum.Rest.DataModel
 
             using (Stream media = Client.GetRaw(contentMediaUri))
             {
+                if (media == null)
+                {
+                    throw new Exception("Stream came back null. This is normally caused by an unreachable ACS Server (DNS problem or JMS DOWN). ACS URL is: " + contentMediaUri);
+                }
                 FileStream fs = File.Create(fullPath);
                 media.CopyTo(fs);
                 fs.Dispose();
