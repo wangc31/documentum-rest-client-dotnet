@@ -1,0 +1,88 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="Emc.Documentum.Rest.Test.ProcessDocumentsTest" Collapsed="true">
+    <Position X="0.5" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAABAAQATAAAAAAAAICAAAAAAAAAAAAAAAhBAAAICA=</HashCode>
+      <FileName>ProcessDocumentsTest.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Emc.Documentum.Rest.Test.DocumentAsNewVersionTest">
+    <Position X="2.25" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAI=</HashCode>
+      <FileName>DocumentAsNewVersionTest.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Emc.Documentum.Rest.Test.DocumentContentTest">
+    <Position X="4" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAI=</HashCode>
+      <FileName>DocumentContentTest.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Emc.Documentum.Rest.Test.DocumentCopyMoveLinkTest">
+    <Position X="5.75" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAI=</HashCode>
+      <FileName>DocumentCopyMoveLinkTest.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Emc.Documentum.Rest.Test.DocumentVersionTest">
+    <Position X="0.5" Y="2.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAI=</HashCode>
+      <FileName>DocumentVersionTest.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Emc.Documentum.Rest.Test.DqlQueryTest" Collapsed="true">
+    <Position X="2.25" Y="2.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAI=</HashCode>
+      <FileName>DqlQueryTest.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Emc.Documentum.Rest.Test.FolderTest">
+    <Position X="4" Y="2.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAI=</HashCode>
+      <FileName>FolderTest.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Emc.Documentum.Rest.Test.HomeCabinetTest" Collapsed="true">
+    <Position X="5.75" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAI=</HashCode>
+      <FileName>HomeCabinetTest.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Emc.Documentum.Rest.Test.Program">
+    <Position X="0.5" Y="4" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>CAAABAAAAQAAAAAAAAAAAAEAAIAQAAAAAAAgBgAgAAI=</HashCode>
+      <FileName>Program.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Emc.Documentum.Rest.Test.RepositoryTest" Collapsed="true">
+    <Position X="2.25" Y="4.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAI=</HashCode>
+      <FileName>RepositoryTest.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Emc.Documentum.Rest.Test.Sprint11Test">
+    <Position X="4.25" Y="4.5" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AAAACAIAQAAAAAAAAAAAAAAIAgAAAAIAAAAAAABBAAA=</HashCode>
+      <FileName>Sprint11Test.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Emc.Documentum.Rest.Test.Sprint12Test" Collapsed="true">
+    <Position X="6.75" Y="4.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Sprint12Test.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>
