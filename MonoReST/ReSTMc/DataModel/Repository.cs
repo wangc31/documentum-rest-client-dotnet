@@ -708,7 +708,7 @@ namespace Emc.Documentum.Rest.DataModel
             checkinOptions.SetQuery("format", ObjectUtil.getDocumentumFormatForFile(file.Name));
             checkinOptions.SetQuery("page", 0);
             checkinOptions.SetQuery("primary", true);
-            checkinOptions.SetQuery("version-label", "ImportAsNewVersion [API-3]");
+            checkinOptions.SetQuery("version-label", "ImportAsNewVersion");
             return doc.CheckinMinor(doc, file.OpenRead(), ObjectUtil.getMimeTypeFromFileName(file.Name), checkinOptions);
         }
 

@@ -62,7 +62,9 @@
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
-    <None Include="App.config" />
+    <None Include="App.config">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="Logger.resx" />
     <None Include="PerfCenterCpl.ico" />
     <None Include="reportXSL.xsl" />

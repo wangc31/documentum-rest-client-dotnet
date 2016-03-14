@@ -62,7 +62,6 @@ namespace Emc.Documentum.Rest.Test
                             break;
  
                         case "test": // will run the conditions for Processdoc
-                        case "Processdoc":
                             //if (cmd == null || cmd.Trim().Equals("") || cmd.Equals(test))
                             //{
                             //    Console.WriteLine("Path argument is required");
@@ -102,11 +101,8 @@ namespace Emc.Documentum.Rest.Test
                         case "cls":
                             Console.Clear();
                             break;
-                        case "dupe":
-                            //Object.DuplicateQuery(client, ReSTHomeUri, repositoryName, printResult);
-                            Console.WriteLine("Unimplemented");
-                            break;
                         case "batch":
+                            // In progress, not useable as of yet
                             Batch batch = new Batch();
                             batch.Description = "test";
                             batch.Transactional = false;
@@ -130,6 +126,9 @@ namespace Emc.Documentum.Rest.Test
                             Search options = new Search();
                             options.TimeZone = cmd;
                             break; 
+                        case "reconfig":
+                            SetupTestData(false);
+                            break;
                         default:
                             Console.WriteLine("Nothing entered");
                             break;
@@ -171,45 +170,11 @@ namespace Emc.Documentum.Rest.Test
 
         public static String PrintMenu()
         {
-
+            Console.WriteLine("reconfig - prompt for re-entering configuration information");
             Console.WriteLine("Enter the Test Name, then the parameters");
             Console.WriteLine("\tdql {dqlquery} - Executes a DQL query and prints the results");
-            Console.WriteLine("\tcontent - creates content under the home cabinet, then "
-                            + "\n\t\tdownloads and deletes");
-            Console.WriteLine("\tfolder  - creates a folder and subfolder under the SystemA/Process"
-                            + "\n\t\tstructure");
-            Console.WriteLine("\tcopymove - create document under the home cabinet, copy "
-                            + "\n\t\tit then move it");
-            Console.WriteLine("\tdeletedocument {objectid} - delete the object by id");
-            Console.WriteLine("\tasnewversion - create document under the home cabinet, check "
-                            + "\n\t\tit out then create another document under home cabinet, \n\t\tand save second document as new minor version of first document");
-            Console.WriteLine("\tgetproperties - get a document under the home cabinet,  "
-                         + "\n\t\tand show its properties");
-            Console.WriteLine("\tupdateproperties - get a document under the home cabinet,  "
-                          + "\n\t\tand update its properties and show them again");
-            Console.WriteLine("\tviewdocument - get a document by qualification,  "
-                        + "\n\t\tand open it for view only");
-            Console.WriteLine("\tcreatrendition - get a document by qualification,  "
-                        + "\n\t\tand create a PDF rendition of it");
-            Console.WriteLine("\tviewrendition - get a document rendtion by qualification,  "
-                       + "\n\t\tand open it for view only passing the parent_id and full_format values");
             Console.WriteLine("\tgetmimetype {filename} - returns the mimetype of the given fileName");
             Console.WriteLine("\tgetformat {filename} - returns the documentum format name of the given fileName");
-            Console.WriteLine("\tviewrendition - get a document rendtion by qualification, and open it"
-                       + "\n\t\tfor view only passing the parent_id and full_format values");
-            Console.WriteLine("\tdocumenthistory - get audit history of a document by qualification,  "
-                      + "\n\t\tpassing the object_id");
-            Console.WriteLine("\tcheckinout - create a test document, check it out, created a new \n\t\tversion of it and check that version in, check"
-                      + "\n\t\t out the new version then cancle the check out. get version list");
-            Console.WriteLine("\timportemail - create a test MSG document, import it into the system then delete it");
-            Console.WriteLine("\texportcase - create a zip file by downloaded a case (passing case folder path or case folder ID)");
-            Console.WriteLine("\texportdocuments - create a zip file of selected documents by passing their IDs");
-            Console.WriteLine("\tfromtemplate - creates a new document from a template");
-            Console.WriteLine("***********************************************************************");
-            Console.WriteLine(" The above commands are developer-oriented unit tests. The below ");
-            Console.WriteLine(" Commands are standalone test commands that are expected to work");
-            Console.WriteLine(" on any machine");
-            Console.WriteLine("***********************************************************************");
             Console.WriteLine("\tsearch - prompts for search criteria and location then runs the search query");
             Console.WriteLine("\ttest - Runs the end to end tests with optional"
                             + "\n\t\tthreads and number of documents. The old "
@@ -237,8 +202,7 @@ namespace Emc.Documentum.Rest.Test
             string defaultRepositoryName = "Process";
             string defaultPrintResult = "false";
 
-            var testConfig = Type.GetType("Mono.Runtime") == null ? ConfigurationManager.GetSection("windowsconfig") as NameValueCollection
-                    : ConfigurationManager.GetSection("unixconfig") as NameValueCollection;
+            var testConfig = ConfigurationManager.GetSection("restconfig") as NameValueCollection;
             if (testConfig != null)
             {
                 defaultReSTHomeUri = testConfig["defaultReSTHomeUri"]; 

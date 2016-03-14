@@ -136,8 +136,7 @@ namespace Emc.Documentum.Rest.Test
         {
             bool useFormLogging = false;
             //Configuration configMgt = ConfigurationManager.AppSettings;
-            var testConfig = Type.GetType("Mono.Runtime") == null? ConfigurationManager.GetSection("windowsconfig") as NameValueCollection 
-                : ConfigurationManager.GetSection("unixconfig") as NameValueCollection;
+            var testConfig = ConfigurationManager.GetSection("restconfig") as NameValueCollection;
             if (testConfig != null)
             {
                 useFormLogging = Boolean.Parse(testConfig["useformlogging"].ToString());
@@ -285,10 +284,10 @@ namespace Emc.Documentum.Rest.Test
 
                 try
                 {
-                    testName = "ReassignDocumentsToCase";
+                    testName = "ReassignDocumentsToCase (Move documents)";
                     WriteOutput("-----BEGIN " + testName + "------------");
                     tStart = DateTime.Now.Ticks;
-                    // Randomly take some assigned documents and re-assign them to the case level (Move) [API-14])
+                    // Randomly take some assigned documents and re-assign them (Move from a templ location to another location))
                     reassignRequestDocumentsToCase(repository, assignDocs);
                     WriteOutput("Assigned " + Math.Ceiling(assignDocs.Count * .30) + " in " + ((DateTime.Now.Ticks - tStart) / TimeSpan.TicksPerMillisecond) + "ms");
                     WriteOutput("-----END " + testName + "--------------");
@@ -504,7 +503,7 @@ namespace Emc.Documentum.Rest.Test
                     ids.Append(",").Append(id);
                 }
             }
-            WriteOutput("[API-20] Export list of files completed and stored: " + testDirectory + Path.DirectorySeparatorChar + "RandomDocsInCase.zip");
+            WriteOutput("[ExportFilesToZip] - Export list of files completed and stored: " + testDirectory + Path.DirectorySeparatorChar + "RandomDocsInCase.zip");
             repository.ExportDocuments(ids.ToString(), testDirectory + Path.DirectorySeparatorChar + "RandomDocsInCase.zip");
         }
 
@@ -512,7 +511,7 @@ namespace Emc.Documentum.Rest.Test
         {
             string casePath = ProcessBasePath + caseId;
 			FileInfo zipFile = repository.ExportFolder(casePath, testDirectory + Path.DirectorySeparatorChar + caseId + ".zip");
-			WriteOutput("[API-19] Export CASE completed and stored: " + testDirectory + Path.DirectorySeparatorChar + caseId + ".zip");
+			WriteOutput("[ExportFolderToZip] Export Folder completed and stored: " + testDirectory + Path.DirectorySeparatorChar + caseId + ".zip");
         }
 
         private void CreateFromTemplate(Repository repository, List<AssignDocument> assignDocs)
@@ -524,7 +523,7 @@ namespace Emc.Documentum.Rest.Test
             List<RestDocument> docs = ObjectUtil.getFeedAsList<RestDocument>(results, true);
             int resultSamples = docs.Count;
 
-            WriteOutput(String.Format("\t[API-4] Returning list of templates..."));
+            WriteOutput(String.Format("\t[TemplateList] Returning list of templates..."));
             foreach (RestDocument doc in docs)
             {
                 WriteOutput(String.Format("\t\t\tTemplate Name: {0} ID: {1}",
@@ -548,7 +547,7 @@ namespace Emc.Documentum.Rest.Test
                 string objectId = newDoc.getAttributeValue("r_object_id").ToString();
                 //String requestId = caseId + " REQUEST-" + new Random().Next(0, 5);
                 assignDocs.Add(new AssignDocument(objectId, caseId, requestId));
-                WriteOutput("\t[API-4] Created document " + documentName + " from template " + template.getAttributeValue("object_name").ToString());
+                WriteOutput("\t[CreateDocumentFromTemplate] Created document " + documentName + " from template " + template.getAttributeValue("object_name").ToString());
             }
         }
 
@@ -566,7 +565,7 @@ namespace Emc.Documentum.Rest.Test
             //search.PageNumber = 1;
             int totalResults = 0;
             double totalPages = 0d;
-            WriteOutput("[API-12] Return a list of documents using search criteria: " + search.Query + " Location: '" + search.Locations + "'");
+            WriteOutput("[SearchResults] Return a list of documents using search criteria: " + search.Query + " Location: '" + search.Locations + "'");
             SearchFeed<RestDocument> feedResults = repository.ExecuteSearch<RestDocument>(search);
             if (feedResults != null)
             {
@@ -578,7 +577,7 @@ namespace Emc.Documentum.Rest.Test
                 {
                     foreach (SearchEntry<RestDocument> result in feedResults.Entries)
                     {
-                        WriteOutput("\t[API-12] Search - RestDocument: " + result.Content.getAttributeValue("object_name").ToString() + " Summary: " + result.Summary
+                        WriteOutput("\t[SearchResults] Search - RestDocument: " + result.Content.getAttributeValue("object_name").ToString() + " Summary: " + result.Summary
                             + " Score: " + result.Score + " Terms: " + String.Join(",", result.Terms));
                         docProcessed++;
                     }
@@ -591,7 +590,7 @@ namespace Emc.Documentum.Rest.Test
                 }
 
             }
-            WriteOutput("[API-12] Result Count: " + totalResults + " Pages: " + totalPages + " Processed in " + ((DateTime.Now.Ticks - tStart) / TimeSpan.TicksPerMillisecond) + "ms");
+            WriteOutput("[SearchResults] Result Count: " + totalResults + " Pages: " + totalPages + " Processed in " + ((DateTime.Now.Ticks - tStart) / TimeSpan.TicksPerMillisecond) + "ms");
         }
 
         public void ImportEmail(Repository repository, float pctTest)
@@ -609,7 +608,7 @@ namespace Emc.Documentum.Rest.Test
                     return;
                 }
                 EmailPackage email = repository.ImportEmail(file, testPrefix + "-" + file.Name, assignPath);
-                WriteOutput("\t[API-24] Email Import\t[API-17] Email-De-duplication");
+                WriteOutput("\t[EmailImport] Email Import\t[DeDuplication] Email-De-duplication");
                 Boolean isDuplicate = email.IsDuplicate;
                 if (isDuplicate)
                 {
@@ -638,7 +637,7 @@ namespace Emc.Documentum.Rest.Test
 
         private void CloseRequestsThenCase(Repository repository)
         {
-            WriteOutput("\t[API-21 (Declare Record),API-27 (Close Case/Request), API-27 (Re-Open Case/Request)");
+            WriteOutput("\t[DeclareRecord,SetCloseCondition,UnsetCloseCondition]");
             foreach (string cr in requestList)
             {
                 Folder requestFolder = null;
@@ -651,19 +650,19 @@ namespace Emc.Documentum.Rest.Test
 
                     if (checkDate.ToShortDateString().Equals(closeDate.ToShortDateString()))
                     {
-                        WriteOutput("\t\t[API-21 (DECLARE RECORD)] - Closing REQUEST" + requestFolder.getAttributeValue("object_name") + " Declared as: " + Repository.RecordType.Extradition);
+                        WriteOutput("\t\t[SetCloseCondition] - Closing REQUEST" + requestFolder.getAttributeValue("object_name") + " Declared as: " + Repository.RecordType.Extradition);
                     }
                     else throw new Exception();
                 }
                 catch (Exception e)
                 {
-                    WriteOutput("\t\t#####FAILED!!E####[API-21 (DECLARE RECORD)] - Closing REQUEST" + requestFolder.getAttributeValue("object_name") + "  as: " + Repository.RecordType.Extradition);
+                    WriteOutput("\t\t#####FAILED!!E####[SetCloseCondition] - Closing REQUEST" + requestFolder.getAttributeValue("object_name") + "  as: " + Repository.RecordType.Extradition);
                 }
                 
             }
             Folder caseFolder   = repository.getFolderByPath(ProcessBasePath + caseId);
             repository.CloseCaseOrRequest(Repository.RecordType.MLAT, caseFolder, DateTime.Now);
-            WriteOutput("\t\t[API-21 (DECLARE RECORD)] - Closing CASE " + caseFolder.getAttributeValue("object_name") + " Declared as: " + Repository.RecordType.MLAT);
+            WriteOutput("\t\t[SetCloseCondition] - Closing CASE " + caseFolder.getAttributeValue("object_name") + " Declared as: " + Repository.RecordType.MLAT);
                 
         }
 
@@ -690,11 +689,11 @@ namespace Emc.Documentum.Rest.Test
 
                 if (retainers[0].getAttributeValue("event_date") == null)
                 {
-                    WriteOutput("\t[API-27] Re-Opened " + folder.getAttributeValue("object_name"));        
+                    WriteOutput("\t[UnsetCloseCondition] " + folder.getAttributeValue("object_name"));        
                 }
                 else
                 {
-                    WriteOutput("\t#####FAILED#####!! [API-27] Re-Open " + folder.getAttributeValue("object_name"));        
+                    WriteOutput("\t#####FAILED#####!! [UnsetCloseCondition] " + folder.getAttributeValue("object_name"));        
                 }
             }
         }
@@ -709,7 +708,7 @@ namespace Emc.Documentum.Rest.Test
                 Feed<RestDocument> results = repository.ExecuteDQL<RestDocument>(
                     String.Format("select * from dm_document where folder('{0}', DESCEND)", path), new FeedGetOptions { Inline=true, Links=true });
                 List<RestDocument> docs = ObjectUtil.getFeedAsList<RestDocument>(results, true);
-                WriteOutput(String.Format("\t\t[API-11] Returning list of documents in path [{0}]", path));
+                WriteOutput(String.Format("\t\t[ReturnListOfDocumentsFromQuery] Returning list of documents in path [{0}]", path));
                 foreach (RestDocument doc in docs)
                 {
                     WriteOutput(String.Format("\t\t\tName: {0} ID: {1}", 
@@ -723,7 +722,7 @@ namespace Emc.Documentum.Rest.Test
         private void ImportAsNewVersion(Repository repository, List<AssignDocument> assignDocs)
         {
             List<AssignDocument> myList = new List<AssignDocument>(assignDocs);
-            WriteOutput(("\tImporting new Content to existing objects as New Versions [API-3]"));
+            WriteOutput(("\t[ImportAsNewVersion] Importing new Content to existing objects as New Versions"));
             for (int i = 0; i < (Math.Ceiling(myList.Count * .20)); i++)
             {
                 AssignDocument aDoc = myList[i];
@@ -739,41 +738,41 @@ namespace Emc.Documentum.Rest.Test
                 doc = doc.Checkout();
                 if (doc.IsCheckedOut())
                 {
-                    WriteOutput("\t\t[API-9] - Checked out document...");
+                    WriteOutput("\t\t[CheckOut] - Checked out document...");
                     doc = doc.CancelCheckout();
                     if(!doc.IsCheckedOut()) {
-                        WriteOutput("\t\t[API-16] - Canceled Checkout....");
+                        WriteOutput("\t\t[CancelCheckOut] - Canceled Checkout....");
                         doc = doc.Checkout();
                         if (doc.IsCheckedOut())
                         {
-                            WriteOutput("\t\t[API-9] - Checked out document after cancel checkout..., document is checked out by: " +doc.getLockOwner());        
+                            WriteOutput("\t\t[CheckOut] - Checked out document after cancel checkout..., document is checked out by: " +doc.getLockOwner());        
                         } else {
-                            WriteOutput("\t\t[API-9] - #####FAILED##### CHECK OUT DOCUMENT");
+                            WriteOutput("\t\t[CheckOut] - #####FAILED##### CHECK OUT DOCUMENT");
                         }
                     }
                 }
                 else
                 {
-                    WriteOutput("\t\t[API-9] - #####FAILED##### CHECK OUT DOCUMENT");
+                    WriteOutput("\t\t[CheckOut] - #####FAILED##### CHECK OUT DOCUMENT");
                 }
                 FileInfo file = ObjectUtil.getRandomFileFromDirectory(randomFilesDirectory);
                 doc = repository.ImportDocumentAsNewVersion(doc, file);
-                WriteOutput("\t [API-3] Import RestDocument as New Version");
+                WriteOutput("\t [ImportAsNewVersion] Import RestDocument as New Version");
 
                 if (doc.IsCheckedOut())
                 {
-                    WriteOutput("\t\t[API-10] - #####FAILED##### CHECK IN DOCUMENT");
+                    WriteOutput("\t\t[CheckIn] - #####FAILED##### CHECK IN DOCUMENT");
                 }
                 else
                 {
-                    WriteOutput("\t\t[API-10] - RestDocument Checked IN...");
+                    WriteOutput("\t\t[CheckIn] - RestDocument Checked IN...");
                 }
 
                 Feed<OutlineAtomContent> newVersions = doc.GetVersionHistory<OutlineAtomContent>(null);
                 List <Entry<OutlineAtomContent>> newEntries = newVersions.Entries;
                 WriteOutput("\t\tNew Version Count: " + newEntries.Count);
                 WriteOutput("\t\tNewDocumentVersion: " + doc.getRepeatingValuesAsString("r_version_label", ",") + " ID: " + doc.getAttributeValue("r_object_id").ToString());
-                WriteOutput("\t\t[API-13] - List of document versions:");
+                WriteOutput("\t\t[ListVersions] - List of document versions:");
                 WriteOutput("Versions:");
                 List<RestDocument> allVersions = repository.getAllDocumentVersions(doc);
                 foreach (RestDocument vDoc in allVersions)
@@ -804,7 +803,7 @@ namespace Emc.Documentum.Rest.Test
                 Directory.CreateDirectory(path);
             }
 			downloadedContentFile.MoveTo(path + Path.DirectorySeparatorChar + objectId + "-" + downloadedContentFile.Name);
-            WriteOutput("\t\t[API-5] - RestDocument file is located: " + downloadedContentFile.FullName);
+            WriteOutput("\t\t[GetFileForView] - RestDocument file is located: " + downloadedContentFile.FullName);
             if (openDocument) System.Diagnostics.Process.Start(downloadedContentFile.FullName);
         }
 
@@ -829,12 +828,12 @@ namespace Emc.Documentum.Rest.Test
                     WriteOutput("\t\tEvent:" + history.getEventName() + " Description:" + history.getEventDescription()
                         + " ObjectName:" + history.getObjectName() + " Time:" + history.getTimeStamp());
                 }
-                WriteOutput("\t\t[API-15,AUD-1] - RestDocument history pulled from the Audit tables");
+                WriteOutput("\t\t[AuditHistory] - RestDocument history pulled from the Audit tables");
             }
         }
 
         /// <summary>
-        /// Move 5 percent of the (no less than 1) documents from request to case level [API-14]
+        /// Move 5 percent of the (no less than 1) documents from request to case level (Shows Re-Filing Documents)
         /// </summary>
         /// <param name="assignDocs"></param>
         /// <param name="repository"></param>
@@ -864,14 +863,14 @@ namespace Emc.Documentum.Rest.Test
                     String.Format("dm_folder where folder('{0}') and object_name='{1}'", caseParentFolder,
                     caseFolderName), new FeedGetOptions { Inline = true, Links = true });
                 repository.moveDocument(docToMove, requestFolder, caseFolder);
-                WriteOutput("\t\t[API-14 (MOVE)] - RestDocument reassigned from " + currentPath + " to " + caseFolderPath);
+                WriteOutput("\t\t[MoveDocument] - RestDocument reassigned from " + currentPath + " to " + caseFolderPath);
             }
         }
 
         /// <summary>
         /// CreateTempDocs and AssignDocs, together, are the first use case from the Instantiation Wizard Form of Process
-        /// Encompases  [API-1: Import New RestDocument], [API-14: Copy/Move RestDocument], [API-18: DeleteDocument]
-        ///             [API-22: Folder Structure]
+        /// Encompases  [Import New RestDocument], [Copy/Move RestDocument], [DeleteDocument]
+        ///             [Folder Structure]
         /// </summary>
         /// <param name="repository"></param>
         /// <returns></returns>
@@ -880,7 +879,7 @@ namespace Emc.Documentum.Rest.Test
             List<AssignDocument> assignDocs = new List<AssignDocument>();
             tempPath = tempPath + "-" + threadNum;
 
-            WriteOutput("[API-22] - Creating or getting folder by path: " + tempPath);
+            WriteOutput("[CreateOrGetFolderPath] - Creating or getting folder by path: " + tempPath);
             Folder tempFolder = repository.getOrCreateFolderByPath(tempPath);
             WriteOutput("\tFolder: " + tempFolder.getAttributeValue("object_name") + ":" 
                 + tempFolder.getAttributeValue("r_object_id") + " successfully created!");
@@ -891,10 +890,10 @@ namespace Emc.Documentum.Rest.Test
                 FileInfo file = ObjectUtil.getRandomFileFromDirectory(randomFilesDirectory);
                 
                 RestDocument tempDoc = repository.ImportNewDocument(file, testPrefix + "-" + file.Name, tempPath);
-                WriteOutput("\t\t[API-1,API-2] - RestDocument " + file.FullName + " imported as " 
+                WriteOutput("\t\t[ImportDocument] - RestDocument " + file.FullName + " imported as " 
                     + tempDoc.getAttributeValue("object_name") + " ObjectID: " 
                     + tempDoc.getAttributeValue("r_object_id").ToString());
-                WriteOutput("\t\t\t[API-17] - Performing Duplicate Detection on content in holding area....");
+                WriteOutput("\t\t\t[DeDuplication] - Performing Duplicate Detection on content in holding area....");
                 CheckDuplicates(repository, tempDoc, tempPath);
 
                 // Cannot randomly assign cases as threads will step on each other. Limite one thread to one 
@@ -902,11 +901,11 @@ namespace Emc.Documentum.Rest.Test
                 
                 String requestId = caseId + " REQUEST-" + new Random().Next(0,5);
                 String objectId = (String)tempDoc.getAttributeValue("r_object_id");
-                WriteOutput("[API-6] \t\tCreated " + tempDoc.getAttributeValue("object_name") + ":" + objectId + " Assigning to Case: " 
+                WriteOutput("[CreateAndAssignDocument] \t\tCreated " + tempDoc.getAttributeValue("object_name") + ":" + objectId + " Assigning to Case: " 
                     + caseId + " Request: " + requestId);
-                WriteOutput("[API-7] - ReFetching and Setting title attribute");
+                WriteOutput("[ChangeExistingDocument] - ReFetching and Setting title attribute");
                 RestDocument doc = tempDoc.fetch<RestDocument>();
-                doc.setAttributeValue("title", "API-2 Set properties test");
+                doc.setAttributeValue("title", "Set properties test");
                 doc.Save();
                 assignDocs.Add(new AssignDocument(objectId, caseId, requestId));
                 // To show we can assign the same document to multiple requests
@@ -947,17 +946,17 @@ namespace Emc.Documentum.Rest.Test
 
                 if (path == null)
                 {
-                    WriteOutput("\t\t\t[API-17] - " + dupes.Count + " duplicates were identified in the SYSTEM. Choosing to allow");
+                    WriteOutput("\t\t\t[DeDuplication] - " + dupes.Count + " duplicates were identified in the SYSTEM. Choosing to allow");
                 }
                 else
                 {
-                    WriteOutput("\t\t\t[API-17] - " + dupes.Count + " duplicates were identified in the destination FOLDER, Choosing to allow.");
+                    WriteOutput("\t\t\t[DeDuplication] - " + dupes.Count + " duplicates were identified in the destination FOLDER, Choosing to allow.");
                 }
 
             }
             else
             {
-                WriteOutput("\t\t\t[API-17] - No Duplicates of this document found.");
+                WriteOutput("\t\t\t[DeDuplication] - No Duplicates of this document found.");
             }
         }
 
@@ -986,7 +985,7 @@ namespace Emc.Documentum.Rest.Test
                 // To copy the document, we need to get a reference object
                 CheckDuplicates(repository, docToCopy, ProcessBasePath + assignDoc.getPath());
                 RestDocument copiedDoc = destinationDir.CreateSubObject<RestDocument>(docToCopy.GetCopy<RestDocument>(), null);
-                WriteOutput("\t[API-14 (COPY)] - Assigned RestDocument: " + copiedDoc.getAttributeValue("object_name") + " ID:" 
+                WriteOutput("\t[CopyDocument] - Assigned RestDocument: " + copiedDoc.getAttributeValue("object_name") + " ID:" 
                     + assignDoc.DocumentId + " to " + ProcessBasePath + assignDoc.getPath());
                 // Update the assignDocumentId to the newly copied document
                 assignDoc.DocumentId = copiedDoc.getAttributeValue("r_object_id").ToString();
@@ -994,7 +993,7 @@ namespace Emc.Documentum.Rest.Test
 
             // Delete our temp folder
             repository.deleteFolder(tempFolder, true, true);
-            WriteOutput("[API-18] - Deleted the holding folder and documents");
+            WriteOutput("[DeleteFolderAndContents] - Deleted the holding folder and documents");
         }
 
         public List<string> CreateRendition(Repository repository, List<AssignDocument> assignDocs, int page, bool isPrimary)
@@ -1031,7 +1030,7 @@ namespace Emc.Documentum.Rest.Test
                 ContentMeta renditionMeta = doc.CreateContent(file.OpenRead(), mimeType, rendOptions);
                 Feed<ContentMeta> contents = doc.GetContents<ContentMeta>(new FeedGetOptions { Inline = true });
                 List<Entry<ContentMeta>> entries = (List<Entry<ContentMeta>>)contents.Entries;
-                WriteOutput("\t\t[API-25(CREATE)] - Rendition Added for RestDocument ID: " 
+                WriteOutput("\t\t[AddRendition] - Rendition Added for RestDocument ID: " 
                     + doc.getAttributeValue("r_object_id") + ":" 
                     + doc.getAttributeValue("object_name"));
                 foreach (Entry<ContentMeta> entry in entries)
@@ -1066,7 +1065,7 @@ namespace Emc.Documentum.Rest.Test
                     Directory.CreateDirectory(renditionDirectory);
                 }
 				downloadedContentFile.MoveTo(renditionDirectory + Path.DirectorySeparatorChar + objectId + "-" + downloadedContentFile.Name);
-                WriteOutput("\t\t[API-25(View)] - Rendition file is located: " + downloadedContentFile.FullName);
+                WriteOutput("\t\t[ViewRendition] - Rendition file is located: " + downloadedContentFile.FullName);
                 if(openDocument) System.Diagnostics.Process.Start(downloadedContentFile.FullName);
             }
         }
