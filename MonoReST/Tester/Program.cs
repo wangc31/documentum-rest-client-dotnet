@@ -170,15 +170,17 @@ namespace Emc.Documentum.Rest.Test
 
         public static String PrintMenu()
         {
-            Console.WriteLine("reconfig - prompt for re-entering configuration information");
-            Console.WriteLine("Enter the Test Name, then the parameters");
-            Console.WriteLine("\tdql {dqlquery} - Executes a DQL query and prints the results");
-            Console.WriteLine("\tgetmimetype {filename} - returns the mimetype of the given fileName");
-            Console.WriteLine("\tgetformat {filename} - returns the documentum format name of the given fileName");
-            Console.WriteLine("\tsearch - prompts for search criteria and location then runs the search query");
-            Console.WriteLine("\ttest - Runs the end to end tests with optional"
+            Console.WriteLine("Usage: ");
+            Console.WriteLine("\treconfig - prompt for re-entering configuration information.");
+            Console.WriteLine("\tdql {dqlquery} - Executes a DQL query and prints the results.");
+            Console.WriteLine("\tgetmimetype {filename} - returns the mimetype of the given fileName.");
+            Console.WriteLine("\tgetformat {filename} - returns the documentum format name of the"
+                            + "\n\t\tgiven fileName.");
+            Console.WriteLine("\tsearch - prompts for search criteria and location then runs the "
+                            + "\n\t\tsearch query.");
+            Console.WriteLine("\ttest - Runs the end to end tests with optional."
                             + "\n\t\tthreads and number of documents. The old "
-                            + "\n\t\tProcessdoc command will do the same test");
+                            + "\n\t\tProcessdoc command will do the same test.");
             
 
 
