@@ -35,7 +35,7 @@ namespace Emc.Documentum.Rest.Test
         string randomFilesDirectory = @"Test";
         string renditionsDirectory = @"Renditions";
         string primaryContentDirectory = @"PrimaryContent";
-        string ProcessBasePath = "/SystemA/Process/";
+        string ProcessBasePath = "/RestTester/TestFiles/";
         List<string> requestList = new List<string>();
         string caseId;
         bool openEachFile = false;
@@ -70,12 +70,12 @@ namespace Emc.Documentum.Rest.Test
         }
 
         /// <summary>
-        /// Unique list of Requests (not Cases)
+        /// Unique list of SupportingDocuments (not Cases)
         /// </summary>
         /// <param name="request"></param>
-        private void addRequest(string request) {
-            if(!requestList.Contains(request)) {
-                requestList.Add(request);
+        private void addSupportingDoc(string supportingDoc) {
+			if(!requestList.Contains(supportingDoc)) {
+				requestList.Add(supportingDoc);
             }
         }
 
@@ -132,11 +132,21 @@ namespace Emc.Documentum.Rest.Test
             return path;
         }
 
+
+
         private void getPreferences()
         {
             bool useFormLogging = false;
-            //Configuration configMgt = ConfigurationManager.AppSettings;
-            var testConfig = ConfigurationManager.GetSection("restconfig") as NameValueCollection;
+			NameValueCollection testConfig = null;
+			try {
+				testConfig = ConfigurationManager.GetSection("restconfig") as NameValueCollection;
+			} catch(ConfigurationErrorsException se) {
+				Console.WriteLine("Configuration could  not load. If you are running under Visual Studio, ensure:\n" +
+					"\n\"<section name=\"restconfig\" type=\"System.Configuration.NameValueSectionHandler\"/> is used. " +
+					"\nIf running under Mono, ensure: " + 
+					"\n<section name=\"restconfig\" type=\"System.Configuration.NameValueSectionHandler,System\"/> is used");
+				Console.WriteLine ("\n\n" + se + "\n\n");
+			}
             if (testConfig != null)
             {
                 useFormLogging = Boolean.Parse(testConfig["useformlogging"].ToString());
@@ -148,7 +158,7 @@ namespace Emc.Documentum.Rest.Test
                 if (!testDirectory.EndsWith(Path.DirectorySeparatorChar + "")) testDirectory = testDirectory + Path.DirectorySeparatorChar + "";
                 testDirectory = testDirectory + testPrefix;
                 testDirectory = getPathRelativeToExecutable(testDirectory);
-
+				Directory.CreateDirectory(testDirectory);
                 // Setup logger and peroformance output
                 string LogThreshold = testConfig["LogThreshold"].ToString();
                 if (client.Logger != null)
@@ -181,7 +191,6 @@ namespace Emc.Documentum.Rest.Test
                         + " customized email test will fail. This message can normally be ignored unless you"
                         + " have the custom ReST email adapter installed.";
                     WriteOutput(msg);
-                    throw new Exception(msg);
                 }
                 Directory.CreateDirectory(primaryContentDirectory);
                 Directory.CreateDirectory(renditionsDirectory);
@@ -253,13 +262,13 @@ namespace Emc.Documentum.Rest.Test
                 }
 
                 try {
-                    // Assign Documents to case/requests
+                    // Assign Documents to case/supportingDocs
                     // When AssignDocs completes, the AssignDocument list will contain the new ObjectIds of each document 
                     // that was assigned to the case
                     testName = "AssignDocs";
                     WriteOutput("-----BEGIN " + testName + "-------------------------");
                     tStart = DateTime.Now.Ticks;
-                    AssignToCaseRequests(repository, assignDocs);
+                    AssignToCaseSupportingDoc(repository, assignDocs);
                     WriteOutput("Assigned " + assignDocs.Count + " in " + ((DateTime.Now.Ticks - tStart) / TimeSpan.TicksPerMillisecond) + "ms");
                     WriteOutput("-----END " + testName + "---------------------------");
                 }
@@ -380,7 +389,7 @@ namespace Emc.Documentum.Rest.Test
                     WriteOutput("-----BEGIN " + testName + "----------------");
                     tStart = DateTime.Now.Ticks;
                     ReturnListOfDocuments(repository, assignDocs);
-                    WriteOutput("List of Documents for 5 requests returned in " + ((DateTime.Now.Ticks - tStart) / TimeSpan.TicksPerMillisecond) + "ms");
+                    WriteOutput("List of Documents for 5 supportingDocs returned in " + ((DateTime.Now.Ticks - tStart) / TimeSpan.TicksPerMillisecond) + "ms");
                     WriteOutput("-----END " + testName + "------------------");
                 }
                 catch (Exception e)
@@ -413,8 +422,8 @@ namespace Emc.Documentum.Rest.Test
 //                    testName = "Close Case or Request";
 //                    WriteOutput("-----BEGIN " + testName + "----------------");
 //                    tStart = DateTime.Now.Ticks;
-//                    CloseRequestsThenCase(repository);
-//                    WriteOutput("Closed " + requestList.Count + " cases/requests in " + ((DateTime.Now.Ticks - tStart) / TimeSpan.TicksPerMillisecond) + "ms");
+//                    CloseSupportingDocThenCase(repository);
+//                    WriteOutput("Closed " + requestList.Count + " cases/supportingDocs in " + ((DateTime.Now.Ticks - tStart) / TimeSpan.TicksPerMillisecond) + "ms");
 //                    WriteOutput("-----END " + testName + "------------------");
 //                }
 //                catch (Exception e)
@@ -428,7 +437,7 @@ namespace Emc.Documentum.Rest.Test
 //                    WriteOutput("-----BEGIN " + testName + "----------------");
 //                    tStart = DateTime.Now.Ticks;
 //                    ReOpenCaseOrRequest(repository);
-//                    WriteOutput("Closed " + requestList.Count + " cases/requests in " + ((DateTime.Now.Ticks - tStart) / TimeSpan.TicksPerMillisecond) + "ms");
+//                    WriteOutput("Closed " + requestList.Count + " cases/supportingDocs in " + ((DateTime.Now.Ticks - tStart) / TimeSpan.TicksPerMillisecond) + "ms");
 //                    WriteOutput("-----END " + testName + "------------------");
 //                }
 //                catch (Exception e)
@@ -635,7 +644,7 @@ namespace Emc.Documentum.Rest.Test
             } 
         }
 
-        private void CloseRequestsThenCase(Repository repository)
+        private void CloseSupportingDocThenCase(Repository repository)
         {
             WriteOutput("\t[DeclareRecord,SetCloseCondition,UnsetCloseCondition]");
             foreach (string cr in requestList)
@@ -908,10 +917,10 @@ namespace Emc.Documentum.Rest.Test
                 doc.setAttributeValue("title", "Set properties test");
                 doc.Save();
                 assignDocs.Add(new AssignDocument(objectId, caseId, requestId));
-                // To show we can assign the same document to multiple requests
+                // To show we can assign the same document to multiple supportingDocs
                 if (previousRequestId != null && !previousRequestId.Equals(requestId))
                 {
-                    WriteOutput("\t\t\tAssigning this document to another request to show the same document can be copied/assigned to multiple requests");
+                    WriteOutput("\t\t\tAssigning this document to another request to show the same document can be copied/assigned to multiple supportingDocs");
                     assignDocs.Add(new AssignDocument(objectId, caseId, previousRequestId));
                 }
                 previousRequestId = requestId;
@@ -961,11 +970,11 @@ namespace Emc.Documentum.Rest.Test
         }
 
         /// <summary>
-        /// Called by CreateTempDocs in order to create case/requests and randomly assign documents to the cases.
+        /// Called by CreateTempDocs in order to create case/supportingDocs and randomly assign documents to the cases.
         /// </summary>
         /// <param name="repository"></param>
         /// <param name="assignDocs"></param>
-        private void AssignToCaseRequests (Repository repository, List<AssignDocument> assignDocs)
+        private void AssignToCaseSupportingDoc (Repository repository, List<AssignDocument> assignDocs)
         {
             //WriteOutput("Getting the holding folder for documents prior to Case/Request assignment...");
             Folder tempFolder = repository.getFolderByQualification("dm_folder where any r_folder_path = '" 
@@ -978,7 +987,7 @@ namespace Emc.Documentum.Rest.Test
                 //WriteOutput("Getting the Case/Request assignment folder...");
                 String assignPath = ProcessBasePath + assignDoc.getPath();
                 // Our case/request tracker for doing record declaration later
-                addRequest(assignPath);
+                addSupportingDoc(assignPath);
                 Folder destinationDir = repository.getOrCreateFolderByPath(assignPath);
                 RestDocument docToCopy = repository.getObjectById<RestDocument>(assignDoc.DocumentId); // getDocumentByQualification("dm_document where r_object_id = '"
                      //+ assignDoc.DocumentId + "'", new FeedGetOptions { Inline = true, Links = true });

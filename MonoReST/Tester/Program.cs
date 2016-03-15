@@ -204,7 +204,17 @@ namespace Emc.Documentum.Rest.Test
             string defaultRepositoryName = "Process";
             string defaultPrintResult = "false";
 
-            var testConfig = ConfigurationManager.GetSection("restconfig") as NameValueCollection;
+			NameValueCollection testConfig=null;
+			try {
+				testConfig = ConfigurationManager.GetSection("restconfig") as NameValueCollection;
+
+			} catch(ConfigurationErrorsException se) {
+				Console.WriteLine("Configuration could  not load. If you are running under Visual Studio, ensure:\n" +
+					"\n\"<section name=\"restconfig\" type=\"System.Configuration.NameValueSectionHandler\"/> is used. " +
+					"\nIf running under Mono, ensure: " + 
+					"\n<section name=\"restconfig\" type=\"System.Configuration.NameValueSectionHandler,System\"/> is used");
+				useDefaults = false;
+			}
             if (testConfig != null)
             {
                 defaultReSTHomeUri = testConfig["defaultReSTHomeUri"]; 
