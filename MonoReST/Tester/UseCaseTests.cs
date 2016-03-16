@@ -459,7 +459,7 @@ namespace Emc.Documentum.Rest.Test
 			if(Type.GetType ("Mono.Runtime") == null) {
 	                try
 	                {
-	                    testName = "ExportCase";
+	                    testName = "ExportFolder";
 	                    WriteOutput("---------------BEGIN " + testName + " ------------------");
 	                    ExportCase(repository);
 	                    WriteOutput("-----------------END " + testName + " ------------------");
@@ -811,7 +811,15 @@ namespace Emc.Documentum.Rest.Test
             {
                 Directory.CreateDirectory(path);
             }
-			downloadedContentFile.MoveTo(path + Path.DirectorySeparatorChar + objectId + "-" + downloadedContentFile.Name);
+            String destinationFile = path + Path.DirectorySeparatorChar + objectId + "-" + downloadedContentFile.Name;
+            if (!File.Exists())
+            {
+                downloadedContentFile.MoveTo(destinationFile);
+            }
+            else
+            {
+                WriteOutput("File already exists: " + destinationFile);
+            }
             WriteOutput("\t\t[GetFileForView] - RestDocument file is located: " + downloadedContentFile.FullName);
             if (openDocument) System.Diagnostics.Process.Start(downloadedContentFile.FullName);
         }
