@@ -813,7 +813,7 @@ namespace Emc.Documentum.Rest.Net
         /// <returns></returns>
         public Feed<T> GetFeed<T>(List<Link> links, string rel, FeedGetOptions options)
         {
-            string followingUri = LinkUtil.FindLinkAsString(
+            string followingUri = LinkRelations.FindLinkAsString(
                 links,
                 rel);
             Feed<T> feed = this.Get<Feed<T>>(followingUri, options == null ? null : options.ToQueryList());
@@ -823,7 +823,7 @@ namespace Emc.Documentum.Rest.Net
 
         public SearchFeed<T> GetSearchFeed<T>(List<Link> links, string rel, FeedGetOptions options)
         {
-            string followingUri = LinkUtil.FindLinkAsString(
+            string followingUri = LinkRelations.FindLinkAsString(
                 links,
                 rel);
             SearchFeed<T> feed = this.Get<SearchFeed<T>>(followingUri, options == null ? null : options.ToQueryList());
@@ -848,7 +848,7 @@ namespace Emc.Documentum.Rest.Net
         /// <returns></returns>
         public T GetSingleton<T>(List<Link> links, string rel, SingleGetOptions options)
         {
-            string followingUri = LinkUtil.FindLinkAsString(
+            string followingUri = LinkRelations.FindLinkAsString(
                 links,
                 rel);
             T result = this.Get<T>(followingUri, options == null ? null : options.ToQueryList());
@@ -874,7 +874,7 @@ namespace Emc.Documentum.Rest.Net
         /// <returns></returns>
         public T Put<T>(List<Link> links, string rel, T input, GenericOptions options)
         {
-            string followingUri = LinkUtil.FindLinkAsString(
+            string followingUri = LinkRelations.FindLinkAsString(
                 links,
                 rel);
             T result = this.Put<T>(followingUri, input, options == null ? null : options.ToQueryList());
@@ -894,7 +894,7 @@ namespace Emc.Documentum.Rest.Net
         /// <returns></returns>
         public R Put<T, R>(List<Link> links, string rel, T input, GenericOptions options)
         {
-            string followingUri = LinkUtil.FindLinkAsString(
+            string followingUri = LinkRelations.FindLinkAsString(
                 links,
                 rel);
             R result = this.Put<T, R>(followingUri, input, options == null ? null : options.ToQueryList());
@@ -914,7 +914,7 @@ namespace Emc.Documentum.Rest.Net
         /// <returns></returns>
         public R Post<T, R>(List<Link> links, string rel, T input, GenericOptions options)
         {
-            string followingUri = LinkUtil.FindLinkAsString(
+            string followingUri = LinkRelations.FindLinkAsString(
                 links,
                 rel);
             R result = this.Post<T, R>(followingUri, input, options == null ? null : options.ToQueryList());
@@ -943,7 +943,7 @@ namespace Emc.Documentum.Rest.Net
         /// <returns></returns>
         public T Post<T>(List<Link> links, string rel, T input, GenericOptions options)
         {
-            string followingUri = LinkUtil.FindLinkAsString(
+            string followingUri = LinkRelations.FindLinkAsString(
                 links,
                 rel);
             T result = this.Post<T>(followingUri, input, options == null ? null : options.ToQueryList());
@@ -963,7 +963,7 @@ namespace Emc.Documentum.Rest.Net
         /// <returns></returns>
         public T Post<T>(List<Link> links, string rel, T input, IDictionary<Stream, string> otherParts, GenericOptions options)
         {
-            string followingUri = LinkUtil.FindLinkAsString(
+            string followingUri = LinkRelations.FindLinkAsString(
                 links,
                 rel);
             T result = this.PostMultiparts<T>(followingUri, input, otherParts, options == null ? null : options.ToQueryList());
@@ -1001,7 +1001,7 @@ namespace Emc.Documentum.Rest.Net
         /// <returns></returns>
         public T Post<T>(List<Link> links, string rel, Stream input, string mime, GenericOptions options)
         {
-            string followingUri = LinkUtil.FindLinkAsString(
+            string followingUri = LinkRelations.FindLinkAsString(
                 links,
                 rel);
             T result = this.PostRaw<T>(followingUri, input, mime, options == null ? null : options.ToQueryList());
@@ -1017,7 +1017,7 @@ namespace Emc.Documentum.Rest.Net
         /// <param name="options"></param>
         public void Delete(List<Link> links, string rel, GenericOptions options)
         {
-            string followingUri = LinkUtil.FindLinkAsString(
+            string followingUri = LinkRelations.FindLinkAsString(
                 links,
                 rel);
             this.Delete(followingUri, options == null ? null : options.ToQueryList());
@@ -1031,9 +1031,9 @@ namespace Emc.Documentum.Rest.Net
         /// <returns></returns>
         public T Self<T>(List<Link> links)
         {
-            string followingUri = LinkUtil.FindLinkAsString(
+            string followingUri = LinkRelations.FindLinkAsString(
                 links,
-                LinkUtil.SELF.Rel);
+                LinkRelations.SELF.Rel);
             T result = this.Get<T>(followingUri, null);
             if(result != null) (result as Executable).SetClient(this);
             return result;

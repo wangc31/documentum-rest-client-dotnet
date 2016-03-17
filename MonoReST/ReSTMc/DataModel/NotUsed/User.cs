@@ -20,7 +20,7 @@ namespace Emc.Documentum.Rest.DataModel
         /// <returns></returns>
         public Folder GetHomeCabinet(SingleGetOptions options)
         {
-            return Client.GetSingleton<Folder>(this.Links, LinkUtil.DEFAULT_FOLDER.Rel, options);
+            return Client.GetSingleton<Folder>(this.Links, LinkRelations.DEFAULT_FOLDER.Rel, options);
         }
 
         /// <summary>
@@ -33,7 +33,7 @@ namespace Emc.Documentum.Rest.DataModel
         {
             return Client.GetFeed<T>(
                 this.Links,
-                LinkUtil.PARENT.Rel,
+                LinkRelations.PARENT.Rel,
                 options);
         }
     }

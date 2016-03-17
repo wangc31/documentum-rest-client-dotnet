@@ -24,7 +24,7 @@ namespace Emc.Documentum.Rest.DataModel
         /// <returns>Returns Boolean value</returns>
         public new bool CanUpdate()
         {
-            return LinkUtil.FindLinkAsString(this.getFullFolderLinks(), LinkUtil.EDIT.Rel) != null;
+            return LinkRelations.FindLinkAsString(this.getFullFolderLinks(), LinkRelations.EDIT.Rel) != null;
         }
 
         /// <summary>
@@ -33,7 +33,7 @@ namespace Emc.Documentum.Rest.DataModel
         /// <returns>Returns Boolean value</returns>
         public new bool CanDelete()
         {
-            return LinkUtil.FindLinkAsString(this.getFullFolderLinks(), LinkUtil.DELETE.Rel) != null;
+            return LinkRelations.FindLinkAsString(this.getFullFolderLinks(), LinkRelations.DELETE.Rel) != null;
         }
 
         /// <summary>
@@ -42,7 +42,7 @@ namespace Emc.Documentum.Rest.DataModel
         /// <returns>Returns Boolean value</returns>
         public bool HasParent()
         {
-            return LinkUtil.FindLinkAsString(this.getFullFolderLinks(), LinkUtil.PARENT.Rel) != null;
+            return LinkRelations.FindLinkAsString(this.getFullFolderLinks(), LinkRelations.PARENT.Rel) != null;
         }
 
         /// <summary>
@@ -55,7 +55,7 @@ namespace Emc.Documentum.Rest.DataModel
         {
             return Client.GetFeed<T>(
                 this.getFullFolderLinks(),
-                LinkUtil.FOLDERS.Rel,
+                LinkRelations.FOLDERS.Rel,
                 options);
         }
 
@@ -69,7 +69,7 @@ namespace Emc.Documentum.Rest.DataModel
         {
             return Client.GetFeed<T>(
                 this.getFullFolderLinks(),
-                LinkUtil.DOCUMENTS.Rel,
+                LinkRelations.DOCUMENTS.Rel,
                 options);
         }
 
@@ -82,7 +82,7 @@ namespace Emc.Documentum.Rest.DataModel
         {
             return Client.GetSingleton<Cabinet>(
                 this.getFullFolderLinks(),
-                LinkUtil.CABINET.Rel,
+                LinkRelations.CABINET.Rel,
                 options);
         }
 
@@ -95,7 +95,7 @@ namespace Emc.Documentum.Rest.DataModel
         {
             return Client.GetSingleton<Folder>(
                 this.getFullFolderLinks(),
-                LinkUtil.PARENT.Rel,
+                LinkRelations.PARENT.Rel,
                 options);
         }
 
@@ -110,7 +110,7 @@ namespace Emc.Documentum.Rest.DataModel
             if (newObj.Client == null) newObj.SetClient(this.Client);
             return Client.Post<Folder>(
                 this.getFullFolderLinks(),
-                LinkUtil.FOLDERS.Rel,
+                LinkRelations.FOLDERS.Rel,
                 newObj,
                 options);
         }
@@ -127,7 +127,7 @@ namespace Emc.Documentum.Rest.DataModel
 
             return Client.Post<RestDocument>(
                 this.getFullFolderLinks(),
-                LinkUtil.DOCUMENTS.Rel,
+                LinkRelations.DOCUMENTS.Rel,
                 newObj,
                 options);
         }
@@ -143,7 +143,7 @@ namespace Emc.Documentum.Rest.DataModel
         {
             return Client.Post<T>(
                 this.getFullFolderLinks(),
-                LinkUtil.OBJECTS.Rel,
+                LinkRelations.OBJECTS.Rel,
                 newObj,
                 options);
         }
@@ -162,7 +162,7 @@ namespace Emc.Documentum.Rest.DataModel
             otherParts.Add(otherPartStream, otherPartMime);
             return Client.Post<RestDocument>(
                 this.Links,
-                LinkUtil.DOCUMENTS.Rel,
+                LinkRelations.DOCUMENTS.Rel,
                 newObj,
                 otherParts,
                 options);
@@ -183,7 +183,7 @@ namespace Emc.Documentum.Rest.DataModel
             otherParts.Add(otherPartStream, otherPartMime);
             options.SetQuery("folderId", this.getAttributeValue("r_object_id"));
             Feed<RestDocument> feed = Client.Post<RestDocument, Feed<RestDocument>>(
-                Client.RepositoryBaseUri + LinkUtil.EMAILIMPORT,
+                Client.RepositoryBaseUri + LinkRelations.EMAILIMPORT,
                 newObj,
                 otherParts,
                 options);
@@ -201,7 +201,7 @@ namespace Emc.Documentum.Rest.DataModel
         {
             return Client.Post<RestDocument, FolderLink>(
                 this.getFullFolderLinks(),
-                LinkUtil.CHILD_LINKS.Rel,
+                LinkRelations.CHILD_LINKS.Rel,
                 newObj,
                 options);
         }

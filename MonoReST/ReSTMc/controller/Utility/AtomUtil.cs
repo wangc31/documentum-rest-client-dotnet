@@ -45,7 +45,7 @@ namespace Emc.Documentum.Rest.Http.Utility
                         href = ct.Src;
                         if (href == null)
                         {
-                            href = LinkUtil.FindLinkAsString(entry.Links, LinkUtil.SELF.Rel);
+                            href = LinkRelations.FindLinkAsString(entry.Links, LinkRelations.SELF.Rel);
                         }
                         break;
                     }

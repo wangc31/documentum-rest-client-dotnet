@@ -49,7 +49,7 @@ namespace Emc.Documentum.Rest.DataModel
         {
             return Client.Put<Folder, FolderLink>(
                 this.Links,
-                LinkUtil.SELF.Rel,
+                LinkRelations.SELF.Rel,
                 newObj,
                 options);
         }
@@ -61,7 +61,7 @@ namespace Emc.Documentum.Rest.DataModel
         {
             Client.Delete(
                 this.Links,
-                LinkUtil.SELF.Rel,
+                LinkRelations.SELF.Rel,
                 null);
         }
     }

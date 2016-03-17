@@ -29,7 +29,7 @@ namespace Emc.Documentum.Rest.DataModel
             options.SetQuery("media-url-policy", "all");
             return Client.GetSingleton<ContentMeta>(
                 this.Links,
-                LinkUtil.PRIMARY_CONTENT.Rel,
+                LinkRelations.PRIMARY_CONTENT.Rel,
                 options);
         }
 
@@ -140,7 +140,7 @@ namespace Emc.Documentum.Rest.DataModel
             options.SetQuery("media-url-policy", "all");
             return Client.GetFeed<T>(
                 this.Links,
-                LinkUtil.CONTENTS.Rel,
+                LinkRelations.CONTENTS.Rel,
                 options);
         }
 
@@ -155,7 +155,7 @@ namespace Emc.Documentum.Rest.DataModel
         {
             return Client.Post<ContentMeta>(
                 this.Links,
-                LinkUtil.CONTENTS.Rel,
+                LinkRelations.CONTENTS.Rel,
                 contentStream,
                 mimeType,
                 options);
@@ -171,7 +171,7 @@ namespace Emc.Documentum.Rest.DataModel
         {
             return Client.GetFeed<T>(
                 this.Links,
-                LinkUtil.VERSIONS.Rel,
+                LinkRelations.VERSIONS.Rel,
                 options);
         }
 
@@ -184,7 +184,7 @@ namespace Emc.Documentum.Rest.DataModel
         {
             return Client.GetSingleton<RestDocument>(
                 this.Links,
-                LinkUtil.CURRENT_VERSION.Rel,
+                LinkRelations.CURRENT_VERSION.Rel,
                 options);
         }
 
@@ -197,7 +197,7 @@ namespace Emc.Documentum.Rest.DataModel
         {
             return Client.GetSingleton<RestDocument>(
                 this.Links,
-                LinkUtil.PREDECESSOR_VERSION.Rel,
+                LinkRelations.PREDECESSOR_VERSION.Rel,
                 options);
         }
 
@@ -210,7 +210,7 @@ namespace Emc.Documentum.Rest.DataModel
         {
             return Client.Post<RestDocument>(
                 this.Links,
-                LinkUtil.EDIT.Rel,
+                LinkRelations.EDIT.Rel,
                 null,
                 options);
         }
@@ -248,7 +248,7 @@ namespace Emc.Documentum.Rest.DataModel
 
             return Client.Put<RestDocument>(
                 this.Links,
-                LinkUtil.CHECKOUT.Rel,
+                LinkRelations.CHECKOUT.Rel,
                 null,
                 null);
         }
@@ -263,7 +263,7 @@ namespace Emc.Documentum.Rest.DataModel
             {
                 Client.Delete(
                     this.Links,
-                    LinkUtil.CANCEL_CHECKOUT.Rel,
+                    LinkRelations.CANCEL_CHECKOUT.Rel,
                     null);
             }
             return this.fetch<RestDocument>();
@@ -279,7 +279,7 @@ namespace Emc.Documentum.Rest.DataModel
         {
             return Client.Post<RestDocument>(
                 this.Links,
-                LinkUtil.CHECKIN_NEXT_MAJOR.Rel,
+                LinkRelations.CHECKIN_NEXT_MAJOR.Rel,
                 newDoc,
                 options);
         }
@@ -294,7 +294,7 @@ namespace Emc.Documentum.Rest.DataModel
         {
             return Client.Post<RestDocument>(
                 this.Links,
-                LinkUtil.CHECKIN_NEXT_MINOR.Rel,
+                LinkRelations.CHECKIN_NEXT_MINOR.Rel,
                 newDoc,
                 options);
         }
@@ -309,7 +309,7 @@ namespace Emc.Documentum.Rest.DataModel
         {
             return Client.Post<RestDocument>(
                 this.Links,
-                LinkUtil.CHECKIN_BRANCH_VERSION.Rel,
+                LinkRelations.CHECKIN_BRANCH_VERSION.Rel,
                 newDoc,
                 options);
         }
@@ -328,7 +328,7 @@ namespace Emc.Documentum.Rest.DataModel
             otherParts.Add(contentStream, mimeType);
             return Client.Post<RestDocument>(
                 this.Links,
-                LinkUtil.CHECKIN_NEXT_MAJOR.Rel,
+                LinkRelations.CHECKIN_NEXT_MAJOR.Rel,
                 newDoc,
                 otherParts,
                 options);
@@ -357,7 +357,7 @@ namespace Emc.Documentum.Rest.DataModel
             }
             retDoc = Client.Post<RestDocument>(
                 this.Links,
-                LinkUtil.CHECKIN_NEXT_MINOR.Rel,
+                LinkRelations.CHECKIN_NEXT_MINOR.Rel,
                 doc,
                 otherParts,
                 options);
@@ -383,7 +383,7 @@ namespace Emc.Documentum.Rest.DataModel
             otherParts.Add(contentStream, mimeType);
             return Client.Post<RestDocument>(
                 this.Links,
-                LinkUtil.CHECKIN_BRANCH_VERSION.Rel,
+                LinkRelations.CHECKIN_BRANCH_VERSION.Rel,
                 newDoc,
                 otherParts,
                 options);
@@ -405,7 +405,7 @@ namespace Emc.Documentum.Rest.DataModel
         /// <returns></returns>
         public bool CanCheckout()
         {
-            return LinkUtil.FindLinkAsString(this.Links, LinkUtil.CHECKOUT.Rel) != null;
+            return LinkRelations.FindLinkAsString(this.Links, LinkRelations.CHECKOUT.Rel) != null;
         }
 
         /// <summary>
@@ -414,9 +414,9 @@ namespace Emc.Documentum.Rest.DataModel
         /// <returns></returns>
         public bool CanCheckin()
         {
-            return LinkUtil.FindLinkAsString(this.Links, LinkUtil.CHECKIN_NEXT_MAJOR.Rel) != null
-                || LinkUtil.FindLinkAsString(this.Links, LinkUtil.CHECKIN_NEXT_MINOR.Rel) != null
-                || LinkUtil.FindLinkAsString(this.Links, LinkUtil.CHECKIN_BRANCH_VERSION.Rel) != null;
+            return LinkRelations.FindLinkAsString(this.Links, LinkRelations.CHECKIN_NEXT_MAJOR.Rel) != null
+                || LinkRelations.FindLinkAsString(this.Links, LinkRelations.CHECKIN_NEXT_MINOR.Rel) != null
+                || LinkRelations.FindLinkAsString(this.Links, LinkRelations.CHECKIN_BRANCH_VERSION.Rel) != null;
         }
 
         /// <summary>
@@ -425,7 +425,7 @@ namespace Emc.Documentum.Rest.DataModel
         /// <returns></returns>
         public bool CanCancelCheckout()
         {
-            return LinkUtil.FindLinkAsString(this.Links, LinkUtil.CANCEL_CHECKOUT.Rel) != null;
+            return LinkRelations.FindLinkAsString(this.Links, LinkRelations.CANCEL_CHECKOUT.Rel) != null;
         }
 
         /// <summary>
@@ -434,7 +434,7 @@ namespace Emc.Documentum.Rest.DataModel
         /// <returns></returns>
         public bool HasPredecessorVersion()
         {
-            return LinkUtil.FindLinkAsString(this.Links, LinkUtil.PREDECESSOR_VERSION.Rel) != null;
+            return LinkRelations.FindLinkAsString(this.Links, LinkRelations.PREDECESSOR_VERSION.Rel) != null;
         }
 
 

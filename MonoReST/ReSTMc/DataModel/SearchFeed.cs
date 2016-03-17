@@ -102,7 +102,7 @@ namespace Emc.Documentum.Rest.DataModel
         {
             return Client.GetSearchFeed<T>(
                 this.Links,
-                Emc.Documentum.Rest.Http.Utility.LinkUtil.PAGING_NEXT.Rel,
+                Emc.Documentum.Rest.Http.Utility.LinkRelations.PAGING_NEXT.Rel,
                 null);
         }
 
@@ -114,7 +114,7 @@ namespace Emc.Documentum.Rest.DataModel
         {
             return Client.GetSearchFeed<T>(
                 this.Links,
-                Emc.Documentum.Rest.Http.Utility.LinkUtil.PAGING_PREV.Rel,
+                Emc.Documentum.Rest.Http.Utility.LinkRelations.PAGING_PREV.Rel,
                 null);
         }
 
@@ -126,7 +126,7 @@ namespace Emc.Documentum.Rest.DataModel
         {
             return Client.GetSearchFeed<T>(
                 Links,
-                Emc.Documentum.Rest.Http.Utility.LinkUtil.PAGING_FIRST.Rel,
+                Emc.Documentum.Rest.Http.Utility.LinkRelations.PAGING_FIRST.Rel,
                 null);
         }
 
@@ -138,7 +138,7 @@ namespace Emc.Documentum.Rest.DataModel
         {
             return Client.GetSearchFeed<T>(
                 this.Links,
-                Emc.Documentum.Rest.Http.Utility.LinkUtil.PAGING_LAST.Rel,
+                Emc.Documentum.Rest.Http.Utility.LinkRelations.PAGING_LAST.Rel,
                 null);
         }
     }

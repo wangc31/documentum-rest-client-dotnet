@@ -62,7 +62,7 @@
     <Compile Include="controller\Options\SingleGetOptions.cs" />
     <Compile Include="controller\Utility\AtomUtil.cs" />
     <Compile Include="controller\Utility\HttpUtil.cs" />
-    <Compile Include="controller\Utility\LinkUtil.cs" />
+    <Compile Include="controller\Utility\LinkRelations.cs" />
     <Compile Include="controller\Utility\LoggerFacade.cs" />
     <Compile Include="controller\Utility\MimeMapping.cs" />
     <Compile Include="controller\Utility\ObjectUtil.cs" />

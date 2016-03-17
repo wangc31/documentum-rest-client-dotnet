@@ -100,7 +100,7 @@ namespace Emc.Documentum.Rest.DataModel
         /// <returns>Returns Boolean value</returns>
         public bool CanUpdate()
         {
-            return LinkUtil.FindLinkAsString(this.Links, LinkUtil.EDIT.Rel) != null;
+            return LinkRelations.FindLinkAsString(this.Links, LinkRelations.EDIT.Rel) != null;
         }
 
 
@@ -113,7 +113,7 @@ namespace Emc.Documentum.Rest.DataModel
         {
             return Client.GetSingleton<Cabinet>(
                 this.Links,
-                LinkUtil.CABINET.Rel,
+                LinkRelations.CABINET.Rel,
                 options);
         }
 
@@ -126,7 +126,7 @@ namespace Emc.Documentum.Rest.DataModel
         {
             return Client.GetSingleton<Folder>(
                 this.Links,
-                LinkUtil.PARENT.Rel,
+                LinkRelations.PARENT.Rel,
                 options);
         }
 
@@ -139,7 +139,7 @@ namespace Emc.Documentum.Rest.DataModel
         {
             return Client.GetFeed<FolderLink>(
                 this.Links,
-                LinkUtil.PARENT_LINKS.Rel,
+                LinkRelations.PARENT_LINKS.Rel,
                 options);
         }
 
@@ -154,7 +154,7 @@ namespace Emc.Documentum.Rest.DataModel
            
             return Client.Post<Folder, FolderLink>(
                 this.Links,
-                LinkUtil.PARENT_LINKS.Rel,
+                LinkRelations.PARENT_LINKS.Rel,
                 newObj,
                 options);
         }
@@ -165,7 +165,7 @@ namespace Emc.Documentum.Rest.DataModel
         /// <returns></returns>
         public bool CanDelete()
         {
-            return LinkUtil.FindLinkAsString(this.Links, LinkUtil.DELETE.Rel) != null;
+            return LinkRelations.FindLinkAsString(this.Links, LinkRelations.DELETE.Rel) != null;
         }
         /// <summary>
         /// Set an attribute value. This should be extended to a custom model object that 
@@ -426,10 +426,10 @@ namespace Emc.Documentum.Rest.DataModel
        /// <returns></returns>
         private string selfLink()
         {
-            string self = LinkUtil.FindLinkAsString(this.Links, LinkUtil.EDIT.Rel);
+            string self = LinkRelations.FindLinkAsString(this.Links, LinkRelations.EDIT.Rel);
             if (self == null)
             {
-                self = LinkUtil.FindLinkAsString(this.Links, LinkUtil.SELF.Rel);
+                self = LinkRelations.FindLinkAsString(this.Links, LinkRelations.SELF.Rel);
             }
             return self;
         }

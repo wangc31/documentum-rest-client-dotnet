@@ -23,7 +23,7 @@ namespace Emc.Documentum.Rest.DataModel
         {
             return Client.GetFeed<T>(
                 this.Links,
-                LinkUtil.PARENT.Rel,
+                LinkRelations.PARENT.Rel,
                 options);
         }
 
@@ -37,7 +37,7 @@ namespace Emc.Documentum.Rest.DataModel
         {
             return Client.GetFeed<T>(
                 this.Links,
-                LinkUtil.GROUPS.Rel,
+                LinkRelations.GROUPS.Rel,
                 options);
         }
 
@@ -51,7 +51,7 @@ namespace Emc.Documentum.Rest.DataModel
         {
             return Client.GetFeed<T>(
                 this.Links,
-                LinkUtil.USERS.Rel,
+                LinkRelations.USERS.Rel,
                 options);
         }
     }

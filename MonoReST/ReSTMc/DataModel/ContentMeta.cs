@@ -28,17 +28,17 @@ namespace Emc.Documentum.Rest.DataModel
         /// <returns>Returns a RestDocument object </returns>
         public RestDocument GetParentDocument(SingleGetOptions options)
         {
-            return Client.GetSingleton<RestDocument>(this.Links, LinkUtil.PARENT.Rel, options);
+            return Client.GetSingleton<RestDocument>(this.Links, LinkRelations.PARENT.Rel, options);
         }
 
         /// <summary>
         /// Download the content media of this content to a local file
         /// </summary>
         /// <returns>Returns System FileInfo</returns>
-        public FileInfo DownloadContentMedia()
+        public FileInfo DownloadContentMediaFile()
         {
             
-            string contentMediaUri = LinkUtil.FindLinkAsString(this.Links, LinkUtil.CONTENT_MEDIA.Rel);
+            string contentMediaUri = LinkRelations.FindLinkAsString(this.Links, LinkRelations.CONTENT_MEDIA.Rel);
             string fileName = (string)getAttributeValue("object_name"); 
             string fileExtension = (string)getAttributeValue("dos_extension");
             if (String.IsNullOrEmpty(fileName))
@@ -54,11 +54,11 @@ namespace Emc.Documentum.Rest.DataModel
             fileName = ObjectUtil.getSafeFileName(fileName);
             string fullPath = Path.Combine(Path.GetTempPath(), fileName + "." + fileExtension);
 
-            using (Stream media = Client.GetRaw(contentMediaUri))
+            using (Stream media = DownloadContentMediaStream())
             {
                 if (media == null)
                 {
-                    throw new Exception("Stream came back null. This is normally caused by an unreachable ACS Server (DNS problem or JMS DOWN). ACS URL is: " + contentMediaUri);
+                    throw new Exception("Stream came back null. This is normally caused by an unreachable ACS Server (DNS problem or Method Server DOWN). ACS URL is: " + contentMediaUri);
                 }
                 FileStream fs = File.Create(fullPath);
                 media.CopyTo(fs);
@@ -68,9 +68,15 @@ namespace Emc.Documentum.Rest.DataModel
             return new FileInfo(fullPath);
         }
 
+        public Stream DownloadContentMediaStream()
+        {
+            string contentMediaUri = LinkRelations.FindLinkAsString(this.Links, LinkRelations.CONTENT_MEDIA.Rel);
+            return Client.GetRaw(contentMediaUri);
+        }
+
         public String getMediaUri()
         {
-            return LinkUtil.FindLinkAsString(this.Links, LinkUtil.CONTENT_MEDIA.Rel);
+            return LinkRelations.FindLinkAsString(this.Links, LinkRelations.CONTENT_MEDIA.Rel);
         }
     }
 }

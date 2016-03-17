@@ -60,7 +60,7 @@ namespace Emc.Documentum.Rest.DataModel
         {
             return Client.GetSingleton<User>(
                 this.Links,
-                LinkUtil.CURRENT_USER.Rel,
+                LinkRelations.CURRENT_USER.Rel,
                 options);
         }
 
@@ -74,7 +74,7 @@ namespace Emc.Documentum.Rest.DataModel
         {
             return Client.GetFeed<T>(
                 this.Links,
-                Emc.Documentum.Rest.Http.Utility.LinkUtil.CABINETS.Rel,
+                Emc.Documentum.Rest.Http.Utility.LinkRelations.CABINETS.Rel,
                 options);
         }
 
@@ -88,7 +88,7 @@ namespace Emc.Documentum.Rest.DataModel
         {
             return Client.GetFeed<T>(
                 this.Links,
-                Emc.Documentum.Rest.Http.Utility.LinkUtil.USERS.Rel,
+                Emc.Documentum.Rest.Http.Utility.LinkRelations.USERS.Rel,
                 options);
         }
 
@@ -102,7 +102,7 @@ namespace Emc.Documentum.Rest.DataModel
         {
             return Client.GetFeed<T>(
                 this.Links,
-                Emc.Documentum.Rest.Http.Utility.LinkUtil.GROUPS.Rel,
+                Emc.Documentum.Rest.Http.Utility.LinkRelations.GROUPS.Rel,
                 options);
         }
 
@@ -116,7 +116,7 @@ namespace Emc.Documentum.Rest.DataModel
         {
             return Client.GetFeed<T>(
                 this.Links,
-                Emc.Documentum.Rest.Http.Utility.LinkUtil.CHECKED_OUT_OBJECTS.Rel,
+                Emc.Documentum.Rest.Http.Utility.LinkRelations.CHECKED_OUT_OBJECTS.Rel,
                 options);
         }
 
@@ -133,7 +133,7 @@ namespace Emc.Documentum.Rest.DataModel
             double pageCount = 0;
 
             if (options == null) options = new FeedGetOptions();
-            string dqlUri = LinkUtil.FindLinkAsString(this.Links, LinkUtil.DQL.Rel);
+            string dqlUri = LinkRelations.FindLinkAsString(this.Links, LinkRelations.DQL.Rel);
             string dqlUriWithoutTemplateParams = dqlUri.Substring(0, dqlUri.IndexOf("{"));
             
             /******************** BEGIN GET TOTAL IF SPECIFIED *****************************/
@@ -184,7 +184,7 @@ namespace Emc.Documentum.Rest.DataModel
             double pageCount = 0;
 
             if (search == null) search = new Search();
-            string searchUri = LinkUtil.FindLinkAsString(this.Links, LinkUtil.SEARCH.Rel);
+            string searchUri = LinkRelations.FindLinkAsString(this.Links, LinkRelations.SEARCH.Rel);
             searchUri = searchUri.Substring(0, searchUri.IndexOf("{"));
             List<KeyValuePair<string, object>> pa = search.ToQueryList();
             SearchFeed<T> feed = this.Client.Get<SearchFeed<T>>(searchUri, pa);
@@ -223,7 +223,7 @@ namespace Emc.Documentum.Rest.DataModel
         public Folder getFolderByQualification(string dql, FeedGetOptions options)
         {
             dql = "select * from " + dql;
-            string dqlUri = LinkUtil.FindLinkAsString(this.Links, LinkUtil.DQL.Rel);
+            string dqlUri = LinkRelations.FindLinkAsString(this.Links, LinkRelations.DQL.Rel);
             string dqlUriWithoutTemplateParams = dqlUri.Substring(0, dqlUri.IndexOf("{"));
             List<KeyValuePair<string, object>> pa = options == null? new FeedGetOptions().ToQueryList() : options.ToQueryList();
             pa.Add(new KeyValuePair<string, object>("dql", dql));
@@ -280,7 +280,7 @@ namespace Emc.Documentum.Rest.DataModel
         public RestDocument getDocumentByQualification(string dql, FeedGetOptions options)
         {
             dql = "select * from " + dql;
-            string dqlUri = LinkUtil.FindLinkAsString(this.Links, LinkUtil.DQL.Rel);
+            string dqlUri = LinkRelations.FindLinkAsString(this.Links, LinkRelations.DQL.Rel);
             string dqlUriWithoutTemplateParams = dqlUri.Substring(0, dqlUri.IndexOf("{"));
             List<KeyValuePair<string, object>> pa = options == null ? new FeedGetOptions().ToQueryList() : options.ToQueryList();
             pa.Add(new KeyValuePair<string, object>("dql", dql));
@@ -359,7 +359,7 @@ namespace Emc.Documentum.Rest.DataModel
         public T getObjectByQualification<T>(string dql, FeedGetOptions options)
         {
             dql = "select * from " + dql;
-            string dqlUri = LinkUtil.FindLinkAsString(this.Links, LinkUtil.DQL.Rel);
+            string dqlUri = LinkRelations.FindLinkAsString(this.Links, LinkRelations.DQL.Rel);
             string dqlUriWithoutTemplateParams = dqlUri.Substring(0, dqlUri.IndexOf("{"));
             List<KeyValuePair<string, object>> pa = options == null ? new FeedGetOptions().ToQueryList() : options.ToQueryList();
             pa.Add(new KeyValuePair<string, object>("dql", dql));
@@ -680,7 +680,7 @@ namespace Emc.Documentum.Rest.DataModel
             obj.Client = Client;
             obj.Name = "cabinet";
             Link cabinets = new Link();
-            cabinets.Href = LinkUtil.FindLink(Links, "cabinets").Href;
+            cabinets.Href = LinkRelations.FindLink(Links, "cabinets").Href;
             cabinets.Rel = "self";
             obj.Links.Add(cabinets);
             obj.Type = objectType;
@@ -748,7 +748,7 @@ namespace Emc.Documentum.Rest.DataModel
 
         public string getRepositoryUri()
         {
-            return LinkUtil.FindLinkAsString(this.Links, LinkUtil.SELF.Rel);
+            return LinkRelations.FindLinkAsString(this.Links, LinkRelations.SELF.Rel);
         }
 
         /// <summary>
@@ -786,7 +786,7 @@ namespace Emc.Documentum.Rest.DataModel
             obj.Client = Client;
             obj.Name = "cabinet";
             Link cabinets = new Link();
-            cabinets.Href = LinkUtil.FindLink(Links, "cabinets").Href;
+            cabinets.Href = LinkRelations.FindLink(Links, "cabinets").Href;
             cabinets.Rel = "self";
             obj.Links.Add(cabinets);
             obj.Type = "dm_cabinet";
@@ -835,7 +835,7 @@ namespace Emc.Documentum.Rest.DataModel
         public Feed<PersistentObject> UpdateCloseDate(String folderId, DateTime closeDate)
         { 
             //http://localhost:8080/dctm-rest/repositories/Process/retention.xml?folderId=xxxxxxxxxxxxxxxx&closeDate=12/2/2014
-            String updateCloseDateUri = LinkUtil.FindLinkAsString(Links, "self") + LinkUtil.RETENTION;
+            String updateCloseDateUri = LinkRelations.FindLinkAsString(Links, "self") + LinkRelations.RETENTION;
             if (closeDate.Ticks == new DateTime().Ticks)
             {
                 // If we have a DateTime nulldate, convert to java null date value
@@ -998,7 +998,7 @@ namespace Emc.Documentum.Rest.DataModel
                             options.SetQuery("media-url-policy", "local");
                             RestDocument doc = getObjectById<RestDocument>(obj.getAttributeValue("r_object_id").ToString());// getDocumentByQualification("dm_document where r_object_id='" + obj.getAttributeValue("r_object_id") + "'", null);
                             ContentMeta primaryContentMeta = doc.GetPrimaryContent(options);
-                            FileInfo downloadedContentFile = primaryContentMeta.DownloadContentMedia();
+                            FileInfo downloadedContentFile = primaryContentMeta.DownloadContentMediaFile();
                             // string path = "c:/temp/case" + obj.getAttributeValue("r_folder_path").ToString();
                             string filename = downloadedContentFile.Name;
 

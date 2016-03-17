@@ -235,12 +235,12 @@ namespace Emc.Documentum.Rest.Test
                     return;
                 }
                 home.SetClient(client);
-				ProductInfo productInfo = home.GetProductInfo ();
                 WriteOutput("Took " + ((DateTime.Now.Ticks - testStart)/TimeSpan.TicksPerMillisecond) + "ms to get ReSTService");
                 //Feed<Repository> repositories = home.GetRepositories<Repository>(new FeedGetOptions { Inline = true, Links = true });
                 //Repository repository = repositories.GetRepository(repositoryName);
                 Repository repository = home.GetRepository(repositoryName);
-                if (repository == null) throw new Exception("Unable to login to the repository, please see server logs for more details.");
+                ProductInfo productInfo = home.GetProductInfo();
+            if (repository == null) throw new Exception("Unable to login to the repository, please see server logs for more details.");
 
 
                 // Set our default folder and document types. 
@@ -396,55 +396,55 @@ namespace Emc.Documentum.Rest.Test
                 {
                     WriteOutput("#####FAILED##### TEST [" + testName + "]" + e.StackTrace.ToString());
                 }
-/**
- * The below items were enablements in DCTM-ReST to handle email import like WDK does (split email from attachments)
- * and a record management function to allow setting a event condition date. They are not in standard ReST Services
- */
-//                try
-//                {
-//                    testName = "ImportEmail";
-//                    WriteOutput("-----BEGIN " + testName + "----------------");
-//                    tStart = DateTime.Now.Ticks;
-//                    float pctTest = 1.0F;
-//                    ImportEmail(repository, pctTest);
-//                    WriteOutput("Imported " + (Math.Ceiling(
-//                        (new DirectoryInfo(randomEmailsDirectory).GetFiles().Count()) * pctTest))
-//                        + " emails in " + ((DateTime.Now.Ticks - tStart) / TimeSpan.TicksPerMillisecond) + "ms");
-//                    WriteOutput("-----END " + testName + "------------------");
-//                }
-//                catch (Exception e)
-//                {
-//                    WriteOutput("#####FAILED##### TEST [" + testName + "]" + e.StackTrace.ToString());
-//                }
-//
-//                try
-//                {
-//                    testName = "Close Case or Request";
-//                    WriteOutput("-----BEGIN " + testName + "----------------");
-//                    tStart = DateTime.Now.Ticks;
-//                    CloseSupportingDocThenCase(repository);
-//                    WriteOutput("Closed " + requestList.Count + " cases/supportingDocs in " + ((DateTime.Now.Ticks - tStart) / TimeSpan.TicksPerMillisecond) + "ms");
-//                    WriteOutput("-----END " + testName + "------------------");
-//                }
-//                catch (Exception e)
-//                {
-//                    WriteOutput("#####FAILED##### TEST [" + testName + "]" + e.StackTrace.ToString());
-//                }
+            /**
+             * The below items were enablements in DCTM-ReST to handle email import like WDK does (split email from attachments)
+             * and a record management function to allow setting a event condition date. They are not in standard ReST Services
+             */
+            //                try
+            //                {
+            //                    testName = "ImportEmail";
+            //                    WriteOutput("-----BEGIN " + testName + "----------------");
+            //                    tStart = DateTime.Now.Ticks;
+            //                    float pctTest = 1.0F;
+            //                    ImportEmail(repository, pctTest);
+            //                    WriteOutput("Imported " + (Math.Ceiling(
+            //                        (new DirectoryInfo(randomEmailsDirectory).GetFiles().Count()) * pctTest))
+            //                        + " emails in " + ((DateTime.Now.Ticks - tStart) / TimeSpan.TicksPerMillisecond) + "ms");
+            //                    WriteOutput("-----END " + testName + "------------------");
+            //                }
+            //                catch (Exception e)
+            //                {
+            //                    WriteOutput("#####FAILED##### TEST [" + testName + "]" + e.StackTrace.ToString());
+            //                }
+            //
+            //                try
+            //                {
+            //                    testName = "Close Case or Request";
+            //                    WriteOutput("-----BEGIN " + testName + "----------------");
+            //                    tStart = DateTime.Now.Ticks;
+            //                    CloseSupportingDocThenCase(repository);
+            //                    WriteOutput("Closed " + requestList.Count + " cases/supportingDocs in " + ((DateTime.Now.Ticks - tStart) / TimeSpan.TicksPerMillisecond) + "ms");
+            //                    WriteOutput("-----END " + testName + "------------------");
+            //                }
+            //                catch (Exception e)
+            //                {
+            //                    WriteOutput("#####FAILED##### TEST [" + testName + "]" + e.StackTrace.ToString());
+            //                }
 
-//                try
-//                {
-//                    testName = "Re-Open Case or Request";
-//                    WriteOutput("-----BEGIN " + testName + "----------------");
-//                    tStart = DateTime.Now.Ticks;
-//                    ReOpenCaseOrRequest(repository);
-//                    WriteOutput("Closed " + requestList.Count + " cases/supportingDocs in " + ((DateTime.Now.Ticks - tStart) / TimeSpan.TicksPerMillisecond) + "ms");
-//                    WriteOutput("-----END " + testName + "------------------");
-//                }
-//                catch (Exception e)
-//                {
-//                    WriteOutput("#####FAILED##### TEST [" + testName + "]" + e.StackTrace.ToString());
-//                }
-			double restVersion = Double.Parse(productInfo.Properties.Major);
+            //                try
+            //                {
+            //                    testName = "Re-Open Case or Request";
+            //                    WriteOutput("-----BEGIN " + testName + "----------------");
+            //                    tStart = DateTime.Now.Ticks;
+            //                    ReOpenCaseOrRequest(repository);
+            //                    WriteOutput("Closed " + requestList.Count + " cases/supportingDocs in " + ((DateTime.Now.Ticks - tStart) / TimeSpan.TicksPerMillisecond) + "ms");
+            //                    WriteOutput("-----END " + testName + "------------------");
+            //                }
+            //                catch (Exception e)
+            //                {
+            //                    WriteOutput("#####FAILED##### TEST [" + testName + "]" + e.StackTrace.ToString());
+            //                }
+            double restVersion = Double.Parse( (productInfo.Properties.Major.Equals("NA")? "7.2" : productInfo.Properties.Major));
 			if (restVersion >= 7.2d) {
 				try {
 					testName = "SEARCH";
@@ -806,7 +806,7 @@ namespace Emc.Documentum.Rest.Test
                 WriteOutput("!!!!!!!!!!!!!!!!VIEW TEST FAILURE!!!!!!!!!!!!!!!!!!!!");
                 return;
             }
-            FileInfo downloadedContentFile = contentMeta.DownloadContentMedia();
+            FileInfo downloadedContentFile = contentMeta.DownloadContentMediaFile();
             if (!Directory.Exists(path))
             {
                 Directory.CreateDirectory(path);
@@ -1068,7 +1068,7 @@ namespace Emc.Documentum.Rest.Test
                     WriteOutput("!!!!!!!!!!!!!!!!RENDITION VIEW TEST FAILURE!!!!!!!!!!!!!!!!!!!!");
                     return;
                 }
-                FileInfo downloadedContentFile = renditionMeta.DownloadContentMedia();
+                FileInfo downloadedContentFile = renditionMeta.DownloadContentMediaFile();
                 if (!Directory.Exists(renditionDirectory))
                 {
                     Directory.CreateDirectory(renditionDirectory);
