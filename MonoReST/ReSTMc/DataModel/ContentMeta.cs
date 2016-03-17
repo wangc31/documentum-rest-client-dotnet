@@ -40,18 +40,27 @@ namespace Emc.Documentum.Rest.DataModel
             
             string contentMediaUri = LinkRelations.FindLinkAsString(this.Links, LinkRelations.CONTENT_MEDIA.Rel);
             string fileName = (string)getAttributeValue("object_name"); 
-            string fileExtension = (string)getAttributeValue("dos_extension");
+            string dosExtension = (string)getAttributeValue("dos_extension");
             if (String.IsNullOrEmpty(fileName))
             {
-                fileName = "temp-" + System.Guid.NewGuid().ToString();
+                fileName = "namelessobj-" + System.Guid.NewGuid().ToString();
             }
-            if (String.IsNullOrEmpty(fileExtension))
+
+            // This is meant to avoid duplication extensions while also ensuring that
+            // known formats get a proper extension if they do not have one.
+            String fileExtension = fileName.Substring(fileName.LastIndexOf('.') + 1);
+            if (fileName.ToLower().EndsWith(dosExtension.ToLower()))
             {
-                fileExtension = fileName.Substring(fileName.LastIndexOf('.') + 1);
-                if(fileName.Equals(fileExtension))
-                    fileExtension = "txt";
+                fileExtension = "";
+            } else {
+                if(dosExtension != null && !dosExtension.Trim().Equals("")) {
+                    fileExtension = dosExtension;
+                }
             }
+
             fileName = ObjectUtil.getSafeFileName(fileName);
+            // Ensure file extension is not already there
+
             string fullPath = Path.Combine(Path.GetTempPath(), fileName + "." + fileExtension);
 
             using (Stream media = DownloadContentMediaStream())
