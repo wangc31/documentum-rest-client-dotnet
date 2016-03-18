@@ -17,6 +17,6 @@ namespace Emc.Documentum.Rest.DataModel
         /// 
         /// </summary>
         /// <param name="client"></param>
-        void SetClient(ReSTController client);
+        void SetClient(RestController client);
     }
 }

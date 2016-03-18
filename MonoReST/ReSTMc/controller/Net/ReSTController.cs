@@ -17,15 +17,15 @@ using System.Runtime.InteropServices;
 namespace Emc.Documentum.Rest.Net
 {
     [ClassInterface(ClassInterfaceType.AutoDual)]
-    public class ReSTController : IDisposable
+    public class RestController : IDisposable
     {
-        private string authorizationHeader = null;
-        private HttpClient httpClient = null;
+        private string _authorizationHeader = null;
+        private HttpClient _httpClient = null;
         private MediaTypeWithQualityHeaderValue JSON_GENERIC_MEDIA_TYPE;
         private MediaTypeWithQualityHeaderValue JSON_VND_MEDIA_TYPE;
         private AbstractJsonSerializer _jsonSerializer;
         private string _userName;
-
+        //TODO: Change to an interface
         public LoggerFacade Logger { get; set; }
         // Disposable.
         private bool _disposed;
@@ -35,17 +35,22 @@ namespace Emc.Documentum.Rest.Net
             set; }
         public string UserName 
         {
-            get { return _userName; }
+            get { 
+                //TODO: Fetch userName after we authenticate rather than relying on passed userName
+                return _userName; 
+            }
         }
 
         /// <summary>
-        /// eSTController is used for all GET/PUT/POST/DELETE calls to the ReST Server
+        /// Initilizes a BasicAuth controller using the provided username and password. Uses the default 
+        /// 5 minute timeout for http responses. You can pass in your own LoggerFacade class for logging.
         /// </summary>
         /// <param name="userName"></param>
         /// <param name="password"></param>
         /// <param name="applicationUser"></param>
-        public ReSTController(string userName, string password, LoggerFacade logger)
+        public RestController(string userName, string password, LoggerFacade logger)
         {
+            //TODO: Change logger to an interface.
             Logger = logger;
             // Default of 5 minutes for a http response timeout.
             if (userName == null || userName.Trim().Equals(""))
@@ -54,52 +59,73 @@ namespace Emc.Documentum.Rest.Net
             } else initClient(userName, password, 5);
         }
 
-        public ReSTController(string userName, string password)
+        /// <summary>
+        /// Initilizes a BasicAuth controller using the provided username and password. Uses the default 
+        /// 5 minute timeout for http responses.
+        /// </summary>
+        /// <param name="userName"></param>
+        /// <param name="password"></param>
+        public RestController(string userName, string password)
         {
             // Default of 5 minutes for a http response timeout.
-            if (userName == null || userName.Trim().Equals(""))
+            if ( (userName == null || userName.Trim().Equals("")) || (password == null))
             {
-                initClient(5);
+                throw new ArgumentNullException("Username and password are required for basic authentication.");
             } else initClient(userName, password, 5);
         }
 
-        // Added for VBA COM compatibility
-        public ReSTController()
-        {
+        /// <summary>
+        /// Provides a generic contructor for "bring you own HttpClient" which should allow 
+        /// bringing your own authentication. This constuctor is also need to provide a COM 
+        /// interface for this class.
+        /// </summary>
+        public RestController() { }
 
+        /// <summary>
+        /// This constructor will use the current process owner's kerberos credentials to login to Documentum 
+        /// Rest Services. This is useful for VBA, CommandLine utilities, or services that will use a service
+        /// account to login. It is not for Kerberos delegated credentials.
+        /// </summary>
+        /// <param name="timeOutMinutes"></param>
+        public RestController(int timeOutMinutes)
+        {
+            initClient(timeOutMinutes);
         }
 
-        private void initClient(HttpClient httpClient, String userName, int timeOutMinutes) 
+        private void initClient(HttpClient httpClient, int timeOutMinutes) 
         {
-            _userName = userName;
+            this._httpClient = httpClient;
+            JSON_GENERIC_MEDIA_TYPE = new MediaTypeWithQualityHeaderValue("application/*+json");
+            JSON_VND_MEDIA_TYPE = new MediaTypeWithQualityHeaderValue("application/vnd.emc.documentum+json");
+            _httpClient.Timeout = new TimeSpan(0, timeOutMinutes, 0);
         }
 
         /// <summary>
         /// Init the Client
         /// </summary>
-        /// <param name="userName"></param>
+        /// <param name="userName"></param
         /// <param name="password"></param>
         /// <param name="applicationUser"></param>
         /// <param name="timeOutMinutes"></param>
         private void initClient(string userName, string password, int timeOutMinutes)
         {
             HttpClientHandler httpClientHandler = new HttpClientHandler();
-            authorizationHeader = "Basic " + Convert.ToBase64String(Encoding.GetEncoding(0).GetBytes(userName + ":" + password));
-            httpClient = new HttpClient(httpClientHandler);
+            _authorizationHeader = "Basic " + Convert.ToBase64String(Encoding.GetEncoding(0).GetBytes(userName + ":" + password));
+            _httpClient = new HttpClient(httpClientHandler);
             _userName = userName;
             JSON_GENERIC_MEDIA_TYPE = new MediaTypeWithQualityHeaderValue("application/*+json");
             JSON_VND_MEDIA_TYPE = new MediaTypeWithQualityHeaderValue("application/vnd.emc.documentum+json");
-            httpClient.Timeout = new TimeSpan(0, timeOutMinutes, 0);
+            _httpClient.Timeout = new TimeSpan(0, timeOutMinutes, 0);
         }
 
         private void initClient(int timeOutMinutes)
         {
             HttpClientHandler httpClientHandler = new HttpClientHandler();
             httpClientHandler.UseDefaultCredentials = true; // Kerberos with fallback to NTLM?
-            httpClient = new HttpClient(httpClientHandler);
+            _httpClient = new HttpClient(httpClientHandler);
             JSON_GENERIC_MEDIA_TYPE = new MediaTypeWithQualityHeaderValue("application/*+json");
             JSON_VND_MEDIA_TYPE = new MediaTypeWithQualityHeaderValue("application/vnd.emc.documentum+json");
-            httpClient.Timeout = new TimeSpan(0, timeOutMinutes, 0);
+            _httpClient.Timeout = new TimeSpan(0, timeOutMinutes, 0);
         }
 
         /// <summary>
@@ -108,8 +134,8 @@ namespace Emc.Documentum.Rest.Net
         /// <param name="request"></param>
         public void SetBasicAuthHeader(HttpRequestMessage request)
         {
-            if (this.authorizationHeader != null)
-                request.Headers.Add("Authorization", this.authorizationHeader);
+            if (this._authorizationHeader != null)
+                request.Headers.Add("Authorization", this._authorizationHeader);
         }
 
         /// <summary>
@@ -196,7 +222,7 @@ namespace Emc.Documentum.Rest.Net
                 uri = UriUtil.BuildUri(uri, query);
                 HttpCompletionOption option = HttpCompletionOption.ResponseContentRead;
                 HttpRequestMessage request = getGetRequest(uri);
-                Task<HttpResponseMessage> response = httpClient.SendAsync(request, option);
+                Task<HttpResponseMessage> response = _httpClient.SendAsync(request, option);
                 long tStart = DateTime.Now.Ticks;
                 HttpResponseMessage message = response.Result;
                 long time = ((DateTime.Now.Ticks - tStart) / TimeSpan.TicksPerMillisecond);
@@ -239,7 +265,7 @@ namespace Emc.Documentum.Rest.Net
                 request.Headers.Accept.Add(JSON_GENERIC_MEDIA_TYPE);
                 SetBasicAuthHeader(request);
                 HttpCompletionOption option = HttpCompletionOption.ResponseContentRead;
-                Task<HttpResponseMessage> response = httpClient.SendAsync(request, option);
+                Task<HttpResponseMessage> response = _httpClient.SendAsync(request, option);
                 long tStart = DateTime.Now.Ticks;
                 HttpResponseMessage message = response.Result; 
                 long time = ((DateTime.Now.Ticks - tStart) / TimeSpan.TicksPerMillisecond);
@@ -316,7 +342,7 @@ namespace Emc.Documentum.Rest.Net
                     byte[] requestInJson = ms.ToArray();
                     HttpCompletionOption option = HttpCompletionOption.ResponseContentRead;
                     HttpRequestMessage request = getPostRequest(uri, requestBody);
-                    Task<HttpResponseMessage> response = httpClient.SendAsync(request, option);
+                    Task<HttpResponseMessage> response = _httpClient.SendAsync(request, option);
                     long tStart = DateTime.Now.Ticks;
                     HttpResponseMessage message = response.Result;
                     long time = ((DateTime.Now.Ticks - tStart) / TimeSpan.TicksPerMillisecond);
@@ -406,7 +432,7 @@ namespace Emc.Documentum.Rest.Net
                     request.Headers.Accept.Add(JSON_GENERIC_MEDIA_TYPE);
                     SetBasicAuthHeader(request);
                     HttpCompletionOption option = HttpCompletionOption.ResponseContentRead;
-                    Task<HttpResponseMessage> response = httpClient.SendAsync(request, option);
+                    Task<HttpResponseMessage> response = _httpClient.SendAsync(request, option);
                     long tStart = DateTime.Now.Ticks;
                     HttpResponseMessage message = response.Result;
                     long time = ((DateTime.Now.Ticks - tStart) / TimeSpan.TicksPerMillisecond);
@@ -477,7 +503,7 @@ namespace Emc.Documentum.Rest.Net
                     request.Headers.Accept.Add(JSON_GENERIC_MEDIA_TYPE);
                     SetBasicAuthHeader(request);
                     HttpCompletionOption option = HttpCompletionOption.ResponseContentRead;
-                    Task<HttpResponseMessage> response = httpClient.SendAsync(request, option);
+                    Task<HttpResponseMessage> response = _httpClient.SendAsync(request, option);
                     long tStart = DateTime.Now.Ticks;
                     HttpResponseMessage message = response.Result;
                     long time = ((DateTime.Now.Ticks - tStart) / TimeSpan.TicksPerMillisecond);
@@ -528,7 +554,7 @@ namespace Emc.Documentum.Rest.Net
                     request.Headers.Accept.Add(JSON_GENERIC_MEDIA_TYPE);
                     SetBasicAuthHeader(request);
                     HttpCompletionOption option = HttpCompletionOption.ResponseContentRead;
-                    Task<HttpResponseMessage> response = httpClient.SendAsync(request, option);
+                    Task<HttpResponseMessage> response = _httpClient.SendAsync(request, option);
                     long tStart = DateTime.Now.Ticks;
                     HttpResponseMessage message = response.Result;
                     long time = ((DateTime.Now.Ticks - tStart) / TimeSpan.TicksPerMillisecond);
@@ -577,7 +603,7 @@ namespace Emc.Documentum.Rest.Net
                     request.Headers.Accept.Add(JSON_GENERIC_MEDIA_TYPE);
                     SetBasicAuthHeader(request);
                     HttpCompletionOption option = HttpCompletionOption.ResponseContentRead;
-                    Task<HttpResponseMessage> response = httpClient.SendAsync(request, option);
+                    Task<HttpResponseMessage> response = _httpClient.SendAsync(request, option);
                     long tStart = DateTime.Now.Ticks;
                     HttpResponseMessage message = response.Result;
                     long time = ((DateTime.Now.Ticks - tStart) / TimeSpan.TicksPerMillisecond);
@@ -643,7 +669,7 @@ namespace Emc.Documentum.Rest.Net
             {
                     HttpCompletionOption option = HttpCompletionOption.ResponseContentRead;
                     HttpRequestMessage request = getPutRequest(uri, requestBody);
-                    Task<HttpResponseMessage> response = httpClient.SendAsync(request, option);
+                    Task<HttpResponseMessage> response = _httpClient.SendAsync(request, option);
                     long tStart = DateTime.Now.Ticks;
                     HttpResponseMessage message = response.Result;
                     long time = ((DateTime.Now.Ticks - tStart) / TimeSpan.TicksPerMillisecond);
@@ -748,7 +774,7 @@ namespace Emc.Documentum.Rest.Net
             {
                 HttpCompletionOption option = HttpCompletionOption.ResponseContentRead;
                 HttpRequestMessage request = getDeleteRequest(uri);
-                Task<HttpResponseMessage> response = httpClient.SendAsync(request, option);
+                Task<HttpResponseMessage> response = _httpClient.SendAsync(request, option);
                 long tStart = DateTime.Now.Ticks;
                 HttpResponseMessage message = response.Result;
                 long time = ((DateTime.Now.Ticks - tStart) / TimeSpan.TicksPerMillisecond);
@@ -788,7 +814,7 @@ namespace Emc.Documentum.Rest.Net
             {
                 if (disposing)
                 {
-                    httpClient.Dispose();
+                    _httpClient.Dispose();
                 }
             }
             _disposed = true;
@@ -1039,9 +1065,9 @@ namespace Emc.Documentum.Rest.Net
             return result;
         }
 
-        public ReSTService getHome(string ReSTHomeUri)
+        public RestService getHome(string RestHomeUri)
         {
-            return Get<ReSTService>(ReSTHomeUri, null);
+            return Get<RestService>(RestHomeUri, null);
         }
     }
 }

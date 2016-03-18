@@ -55,7 +55,7 @@
     <Compile Include="controller\Json\AbstractSerializer.cs" />
     <Compile Include="controller\Json\DefaultDataContractJsonSerializer.cs" />
     <Compile Include="controller\Json\JsonDotnetJsonSerializer.cs" />
-    <Compile Include="controller\Net\ReSTController.cs" />
+    <Compile Include="controller\Net\RestController.cs" />
     <Compile Include="controller\Options\FeedGetOptions.cs" />
     <Compile Include="controller\Options\FullTextQueryOptions.cs" />
     <Compile Include="controller\Options\GenericOptions.cs" />
@@ -85,7 +85,7 @@
     <Compile Include="DataModel\PersistentObject.cs" />
     <Compile Include="DataModel\ProductInfo.cs" />
     <Compile Include="DataModel\Repository.cs" />
-    <Compile Include="DataModel\ReSTService.cs" />
+    <Compile Include="DataModel\RestService.cs" />
     <Compile Include="DataModel\SearchEntry.cs" />
     <Compile Include="DataModel\SearchFeed.cs" />
   </ItemGroup>

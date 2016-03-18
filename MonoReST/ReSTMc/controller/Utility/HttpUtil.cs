@@ -11,7 +11,7 @@ namespace Emc.Documentum.Rest.Http.Utility
 {
     public class HttpUtil
     {
-        //public static Feed<T> GetFeed<T>(List<Link> links, string rel, ReSTController client, FeedGetOptions options)
+        //public static Feed<T> GetFeed<T>(List<Link> links, string rel, RestController client, FeedGetOptions options)
         //{
         //    string followingUri = LinkUtil.FindLinkAsString(
         //        links,
@@ -21,7 +21,7 @@ namespace Emc.Documentum.Rest.Http.Utility
         //    return feed;
         //}
 
-        //public static T GetSingleton<T>(List<Link> links, string rel, ReSTController client, SingleGetOptions options)
+        //public static T GetSingleton<T>(List<Link> links, string rel, RestController client, SingleGetOptions options)
         //{
         //    string followingUri = LinkUtil.FindLinkAsString(
         //        links,
@@ -31,7 +31,7 @@ namespace Emc.Documentum.Rest.Http.Utility
         //    return result;
         //}
 
-        //public static T Put<T>(List<Link> links, string rel, T input, ReSTController client, GenericOptions options)
+        //public static T Put<T>(List<Link> links, string rel, T input, RestController client, GenericOptions options)
         //{
         //    string followingUri = LinkUtil.FindLinkAsString(
         //        links,
@@ -41,7 +41,7 @@ namespace Emc.Documentum.Rest.Http.Utility
         //    return result;
         //}
 
-        //public static R Put<T, R>(List<Link> links, string rel, T input, ReSTController client, GenericOptions options)
+        //public static R Put<T, R>(List<Link> links, string rel, T input, RestController client, GenericOptions options)
         //{
         //    string followingUri = LinkUtil.FindLinkAsString(
         //        links,
@@ -51,7 +51,7 @@ namespace Emc.Documentum.Rest.Http.Utility
         //    return result;
         //}
 
-        //public static R Post<T, R>(List<Link> links, string rel, T input, ReSTController client, GenericOptions options)
+        //public static R Post<T, R>(List<Link> links, string rel, T input, RestController client, GenericOptions options)
         //{
         //    string followingUri = LinkUtil.FindLinkAsString(
         //        links,
@@ -61,14 +61,14 @@ namespace Emc.Documentum.Rest.Http.Utility
         //    return result;
         //}
 
-        //public static T Post<T>(String uri, T input, ReSTController client, GenericOptions options)
+        //public static T Post<T>(String uri, T input, RestController client, GenericOptions options)
         //{
         //    T result = client.Post<T>(uri, input, options == null ? null : options.ToQueryList());
         //    (result as Executable).SetClient(client);
         //    return result;
         //}
 
-        //public static T Post<T>(List<Link> links, string rel, T input, ReSTController client, GenericOptions options)
+        //public static T Post<T>(List<Link> links, string rel, T input, RestController client, GenericOptions options)
         //{
         //    string followingUri = LinkUtil.FindLinkAsString(
         //        links,
@@ -78,7 +78,7 @@ namespace Emc.Documentum.Rest.Http.Utility
         //    return result;
         //}
 
-        //public static T Post<T>(List<Link> links, string rel, T input, IDictionary<Stream, string> otherParts, ReSTController client, GenericOptions options)
+        //public static T Post<T>(List<Link> links, string rel, T input, IDictionary<Stream, string> otherParts, RestController client, GenericOptions options)
         //{
         //    string followingUri = LinkUtil.FindLinkAsString(
         //        links,
@@ -88,7 +88,7 @@ namespace Emc.Documentum.Rest.Http.Utility
         //    return result;
         //}
 
-        //public static T Post<T>(List<Link> links, string rel, Stream input, string mime, ReSTController client, GenericOptions options)
+        //public static T Post<T>(List<Link> links, string rel, Stream input, string mime, RestController client, GenericOptions options)
         //{
         //    string followingUri = LinkUtil.FindLinkAsString(
         //        links,
@@ -98,7 +98,7 @@ namespace Emc.Documentum.Rest.Http.Utility
         //    return result;
         //}
 
-        //public static void Delete(List<Link> links, string rel, ReSTController client, GenericOptions options)
+        //public static void Delete(List<Link> links, string rel, RestController client, GenericOptions options)
         //{
         //    string followingUri = LinkUtil.FindLinkAsString(
         //        links,
@@ -106,7 +106,7 @@ namespace Emc.Documentum.Rest.Http.Utility
         //    client.Delete(followingUri, options == null ? null : options.ToQueryList());
         //}
 
-        //public static T Self<T>(List<Link> links, ReSTController client)
+        //public static T Self<T>(List<Link> links, RestController client)
         //{
         //    string followingUri = LinkUtil.FindLinkAsString(
         //        links,

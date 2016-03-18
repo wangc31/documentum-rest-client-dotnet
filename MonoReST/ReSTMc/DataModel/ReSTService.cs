@@ -12,7 +12,7 @@ namespace Emc.Documentum.Rest.DataModel
 #pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
     [DataContract(Name = "services", Namespace = "http://identifiers.emc.com/vocab/documentum")]
     [ClassInterface(ClassInterfaceType.AutoDual)]
-    public class ReSTService : Executable
+    public class RestService : Executable
     {
         [DataMember(Name = "resources")]
         public Resources Resources { 
@@ -26,13 +26,13 @@ namespace Emc.Documentum.Rest.DataModel
             return serializer.Serialize(this);
         }
 
-        private ReSTController _client;
-        public void SetClient(ReSTController client)
+        private RestController _client;
+        public void SetClient(RestController client)
         {
             _client = client;
         }
 
-        public ReSTController Client
+        public RestController Client
         {
             get { return _client; }
             set { this._client = value; }

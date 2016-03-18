@@ -11,9 +11,9 @@ namespace Emc.Documentum.Rest.Test
 {
     public class DqlQueryTest
     {
-        public static void Run(ReSTController client, string ReSTHomeUri, string query, int itemsPerPage, bool pauseBetweenPages, string repositoryName, bool printResult)
+        public static void Run(RestController client, string RestHomeUri, string query, int itemsPerPage, bool pauseBetweenPages, string repositoryName, bool printResult)
         {
-            ReSTService home = client.Get<ReSTService>(ReSTHomeUri, null);
+            RestService home = client.Get<RestService>(RestHomeUri, null);
             home.SetClient(client);
             Feed<Repository> repositories = home.GetRepositories<Repository>(new FeedGetOptions { Inline = true, Links = true });
             Repository repository = repositories.FindInlineEntry(repositoryName);

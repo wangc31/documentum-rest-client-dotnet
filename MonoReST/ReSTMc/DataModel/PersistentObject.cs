@@ -243,8 +243,8 @@ namespace Emc.Documentum.Rest.DataModel
         //    }
         //}
 
-        private ReSTController _client;
-        public void SetClient(ReSTController client)
+        private RestController _client;
+        public void SetClient(RestController client)
         {
             _client = client;
         }
@@ -252,7 +252,7 @@ namespace Emc.Documentum.Rest.DataModel
         /// <summary>
         /// Rest controler client 
         /// </summary>
-        public ReSTController Client
+        public RestController Client
         {
             get { return _client; }
             set { this._client = value; }

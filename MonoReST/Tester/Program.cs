@@ -16,10 +16,10 @@ namespace Emc.Documentum.Rest.Test
 {
     class Program
     {
-        private static string ReSTHomeUri;
+        private static string RestHomeUri;
         private static string username;
         private static string password;
-        private static ReSTController client;
+        private static RestController client;
         private static string repositoryName;
         private static bool printResult;
 
@@ -58,7 +58,7 @@ namespace Emc.Documentum.Rest.Test
                     switch (test.ToLower())
                     {
                         case "dql":
-                            DqlQueryTest.Run(client, ReSTHomeUri, cmd, 20, false, repositoryName, printResult);
+                            DqlQueryTest.Run(client, RestHomeUri, cmd, 20, false, repositoryName, printResult);
                             break;
  
                         case "test": // will run the conditions for Processdoc
@@ -76,8 +76,8 @@ namespace Emc.Documentum.Rest.Test
                             {
                                 for (int i = 0; i < threadCount; i++)
                                 {
-                                    UseCaseTests aTest = new UseCaseTests(new ReSTController(username, password), 
-                                            ReSTHomeUri, repositoryName, threadCount > 1 ? true : false, "/Temp/Test-" + DateTime.Now.Ticks, i, numDocs);
+                                    UseCaseTests aTest = new UseCaseTests(new RestController(username, password), 
+                                            RestHomeUri, repositoryName, threadCount > 1 ? true : false, "/Temp/Test-" + DateTime.Now.Ticks, i, numDocs);
                                     ThreadStart job = new ThreadStart(aTest.Start);
                                     new Thread(job).Start();
                                 }
@@ -86,8 +86,8 @@ namespace Emc.Documentum.Rest.Test
                             }
                             else
                             {
-                                UseCaseTests aTest = new UseCaseTests(new ReSTController(username, password),
-                                        ReSTHomeUri, repositoryName, threadCount > 1 ? true : false, "/Temp/Test-" + DateTime.Now.Ticks, 1, numDocs);
+                                UseCaseTests aTest = new UseCaseTests(new RestController(username, password),
+                                        RestHomeUri, repositoryName, threadCount > 1 ? true : false, "/Temp/Test-" + DateTime.Now.Ticks, 1, numDocs);
                                 aTest.Start();
                             }
                             break;
@@ -198,7 +198,7 @@ namespace Emc.Documentum.Rest.Test
         }
         private static void SetupTestData(bool useDefaults)
         {
-            string defaultReSTHomeUri = @"http://localhost:8080/dctm-rest/services";
+            string defaultRestHomeUri = @"http://localhost:8080/dctm-rest/services";
             string defaultUsername = "dmadmin";
             string defaultPassword = "password";
             string defaultRepositoryName = "Process";
@@ -217,7 +217,7 @@ namespace Emc.Documentum.Rest.Test
 			}
             if (testConfig != null)
             {
-                defaultReSTHomeUri = testConfig["defaultReSTHomeUri"]; 
+                defaultRestHomeUri = testConfig["defaultRestHomeUri"]; 
                 defaultUsername = testConfig["defaultUsername"];
                 defaultPassword = testConfig["defaultPassword"];
                 defaultRepositoryName = testConfig["defaultRepositoryName"];
@@ -228,7 +228,7 @@ namespace Emc.Documentum.Rest.Test
             
             if (useDefaults)
             {
-                ReSTHomeUri = defaultReSTHomeUri;
+                RestHomeUri = defaultRestHomeUri;
                 username = defaultUsername;
                 password = defaultPassword;
                 repositoryName = defaultRepositoryName;
@@ -236,21 +236,21 @@ namespace Emc.Documentum.Rest.Test
             }
             else
             {
-                readSetupParameters(defaultReSTHomeUri, defaultUsername, defaultPassword, defaultRepositoryName, defaultPrintResult);
+                readSetupParameters(defaultRestHomeUri, defaultUsername, defaultPassword, defaultRepositoryName, defaultPrintResult);
             }
-            client = new ReSTController(null, null); // new ReSTController(username, password);
+            client = new RestController(null, null); // new RestController(username, password);
             // alternatively, you can choose .net default data contract serializer: new DefaultDataContractJsonSerializer();
             client.JsonSerializer = new JsonDotnetJsonSerializer();
             Console.WriteLine();
         }
 
-        public static void readSetupParameters(string defaultReSTHomeumentUri, string defaultUsername, string defaultPassword,
+        public static void readSetupParameters(string defaultRestHomeumentUri, string defaultUsername, string defaultPassword,
             string defaultRepositoryName, string defaultPrintResult)
         {
             Console.WriteLine("$$$$ Test for the Documentum REST .NET Client Reference Implementation$$$$\r\n");
-            Console.Write("Set the home document URL [" + defaultReSTHomeumentUri + "] :");
-            ReSTHomeUri = Console.ReadLine();
-            if (String.IsNullOrEmpty(ReSTHomeUri)) ReSTHomeUri = defaultReSTHomeumentUri;
+            Console.Write("Set the home document URL [" + defaultRestHomeumentUri + "] :");
+            RestHomeUri = Console.ReadLine();
+            if (String.IsNullOrEmpty(RestHomeUri)) RestHomeUri = defaultRestHomeumentUri;
 
             Console.Write("Set the username [" + defaultUsername + "] :");
             username = Console.ReadLine();

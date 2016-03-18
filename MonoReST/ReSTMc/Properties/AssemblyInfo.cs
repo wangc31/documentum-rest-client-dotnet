@@ -6,7 +6,7 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("DctmRestMC")]
-[assembly: AssemblyDescription("ReST Controller and Model for Application Integration")]
+[assembly: AssemblyDescription("Rest Controller and Model for Application Integration")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("EMC")]
 [assembly: AssemblyProduct("DctmRestMC")]

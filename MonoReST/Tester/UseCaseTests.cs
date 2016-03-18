@@ -21,8 +21,8 @@ namespace Emc.Documentum.Rest.Test
     /// </summary>
     public class UseCaseTests : IDisposable
     {
-        private ReSTController client;
-        private string ReSTHomeUri;
+        private RestController client;
+        private string RestHomeUri;
         private string repositoryName;
         private bool printResult;
         private int numDocs;
@@ -48,16 +48,16 @@ namespace Emc.Documentum.Rest.Test
         /// 
         /// </summary>
         /// <param name="client"></param>
-        /// <param name="ReSTHomeUri"></param>
+        /// <param name="RestHomeUri"></param>
         /// <param name="repositoryName"></param>
         /// <param name="printResult"></param>
         /// <param name="path"></param>
         /// <param name="ThreadNum"></param>
         /// <param name="numDocs"></param>
-        public UseCaseTests(ReSTController client, string ReSTHomeUri, string repositoryName, bool printResult, string path, int ThreadNum, int numDocs)
+        public UseCaseTests(RestController client, string RestHomeUri, string repositoryName, bool printResult, string path, int ThreadNum, int numDocs)
         {
             this.client = client;
-            this.ReSTHomeUri = ReSTHomeUri;
+            this.RestHomeUri = RestHomeUri;
             this.repositoryName = repositoryName;
             this.printResult = printResult;
             this.tempPath = path;
@@ -187,9 +187,9 @@ namespace Emc.Documentum.Rest.Test
                 if (!Directory.Exists(randomEmailsDirectory))
                 {
                     String msg = "Unable to find the directory specified: " + randomEmailsDirectory + " to pull"
-                        + " random email files from. If customized ReST email processing is installed, the"
+                        + " random email files from. If customized Rest email processing is installed, the"
                         + " customized email test will fail. This message can normally be ignored unless you"
-                        + " have the custom ReST email adapter installed.";
+                        + " have the custom Rest email adapter installed.";
                     WriteOutput(msg);
                 }
                 Directory.CreateDirectory(primaryContentDirectory);
@@ -228,14 +228,14 @@ namespace Emc.Documentum.Rest.Test
                 List<AssignDocument> assignDocs = null;
                 List<string> idsWithRenditions = null;
 
-                ReSTService home = client.Get<ReSTService>(ReSTHomeUri, null);
+                RestService home = client.Get<RestService>(RestHomeUri, null);
                 if (home == null)
                 {
-                    WriteOutput("\nUnable to get Rest Service at: " + ReSTHomeUri + " check to see if the service is available.");
+                    WriteOutput("\nUnable to get Rest Service at: " + RestHomeUri + " check to see if the service is available.");
                     return;
                 }
                 home.SetClient(client);
-                WriteOutput("Took " + ((DateTime.Now.Ticks - testStart)/TimeSpan.TicksPerMillisecond) + "ms to get ReSTService");
+                WriteOutput("Took " + ((DateTime.Now.Ticks - testStart)/TimeSpan.TicksPerMillisecond) + "ms to get RestService");
                 //Feed<Repository> repositories = home.GetRepositories<Repository>(new FeedGetOptions { Inline = true, Links = true });
                 //Repository repository = repositories.GetRepository(repositoryName);
                 Repository repository = home.GetRepository(repositoryName);
@@ -397,8 +397,8 @@ namespace Emc.Documentum.Rest.Test
                     WriteOutput("#####FAILED##### TEST [" + testName + "]" + e.StackTrace.ToString());
                 }
             /**
-             * The below items were enablements in DCTM-ReST to handle email import like WDK does (split email from attachments)
-             * and a record management function to allow setting a event condition date. They are not in standard ReST Services
+             * The below items were enablements in DCTM-Rest to handle email import like WDK does (split email from attachments)
+             * and a record management function to allow setting a event condition date. They are not in standard Rest Services
              */
             //                try
             //                {

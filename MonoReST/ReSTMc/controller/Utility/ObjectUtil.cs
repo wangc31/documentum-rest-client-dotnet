@@ -279,7 +279,7 @@ namespace Emc.Documentum.Rest.Http.Utility
 
         public static EmailPackage getFeedAsEmailPackage(Feed<RestDocument> feed)
         {
-            ReSTController client = feed.Client;
+            RestController client = feed.Client;
             if (client == null) throw new Exception("CLIENTNULLEXCEPTION: the feed passed does not have its client set, no operations are possible without this.");
             long tStart = DateTime.Now.Ticks;
             SingleGetOptions options = new SingleGetOptions { Inline = true, Links = true };
@@ -325,7 +325,7 @@ namespace Emc.Documentum.Rest.Http.Utility
             return emailPkg;
         }
 
-        //private static T GetContentWithLinks<T>(ReSTController client, T content) where T : PersistentObject
+        //private static T GetContentWithLinks<T>(RestController client, T content) where T : PersistentObject
         //{
         //    T fullContent = default(T);
         //    PersistentObject obj = (content as PersistentObject);
