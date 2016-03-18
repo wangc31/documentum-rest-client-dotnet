@@ -53,6 +53,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="controller\Utility\LinkRelations.cs" />
     <Compile Include="DataModel\RestDocument.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="controller\Json\AbstractSerializer.cs" />
@@ -66,7 +67,6 @@
     <Compile Include="controller\Options\SingleGetOptions.cs" />
     <Compile Include="controller\Utility\AtomUtil.cs" />
     <Compile Include="controller\Utility\HttpUtil.cs" />
-    <Compile Include="controller\Utility\LinkUtil.cs" />
     <Compile Include="controller\Utility\LoggerFacade.cs" />
     <Compile Include="controller\Utility\MimeMapping.cs" />
     <Compile Include="controller\Utility\ObjectUtil.cs" />

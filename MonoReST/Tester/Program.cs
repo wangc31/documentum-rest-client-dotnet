@@ -30,6 +30,9 @@ namespace Emc.Documentum.Rest.Test
             Console.ForegroundColor = ConsoleColor.White;
            // Console.BufferHeight = 360;
            // Console.BufferHeight = 210;
+            NameValueCollection config = getDefaultConfiguration();
+            bool useDefault = config != null && Boolean.Parse(config["useDefaults"]);
+            SetupTestData(useDefault);
             SetupTestData(false);
 
             String line = PrintMenu();
