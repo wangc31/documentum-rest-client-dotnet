@@ -13,6 +13,12 @@ namespace Emc.Documentum.Rest.Test
     {
         public static void Run(ReSTController client, string ReSTHomeUri, string query, int itemsPerPage, bool pauseBetweenPages, string repositoryName, bool printResult)
         {
+            if (String.IsNullOrWhiteSpace(query))
+            {
+                Console.WriteLine("DQL expression cannot be empty. Usage: dql <dqlquery>");
+                return;
+            }
+
             ReSTService home = client.Get<ReSTService>(ReSTHomeUri, null);
             home.SetClient(client);
             Feed<Repository> repositories = home.GetRepositories<Repository>(new FeedGetOptions { Inline = true, Links = true });

@@ -30,7 +30,9 @@ namespace Emc.Documentum.Rest.Test
             Console.ForegroundColor = ConsoleColor.White;
            // Console.BufferHeight = 360;
            // Console.BufferHeight = 210;
-            SetupTestData(false);
+            NameValueCollection config = getDefaultConfiguration();
+            bool useDefault = config != null && Boolean.Parse(config["useDefaults"]);
+            SetupTestData(useDefault);
 
             String line = PrintMenu();
             while(!(line.Equals("x") || line.Equals("exit")) )
@@ -196,6 +198,7 @@ namespace Emc.Documentum.Rest.Test
             Console.WriteLine();
             return line;
         }
+
         private static void SetupTestData(bool useDefaults)
         {
             string defaultReSTHomeUri = @"http://localhost:8080/dctm-rest/services";
@@ -204,28 +207,16 @@ namespace Emc.Documentum.Rest.Test
             string defaultRepositoryName = "Process";
             string defaultPrintResult = "false";
 
-			NameValueCollection testConfig=null;
-			try {
-				testConfig = ConfigurationManager.GetSection("restconfig") as NameValueCollection;
-
-			} catch(ConfigurationErrorsException se) {
-				Console.WriteLine("Configuration could  not load. If you are running under Visual Studio, ensure:\n" +
-					"\n\"<section name=\"restconfig\" type=\"System.Configuration.NameValueSectionHandler\"/> is used. " +
-					"\nIf running under Mono, ensure: " + 
-					"\n<section name=\"restconfig\" type=\"System.Configuration.NameValueSectionHandler,System\"/> is used");
-				useDefaults = false;
-			}
+            NameValueCollection testConfig = getDefaultConfiguration();
             if (testConfig != null)
             {
-                defaultReSTHomeUri = testConfig["defaultReSTHomeUri"]; 
+                defaultReSTHomeUri = testConfig["defaultReSTHomeUri"];
                 defaultUsername = testConfig["defaultUsername"];
                 defaultPassword = testConfig["defaultPassword"];
                 defaultRepositoryName = testConfig["defaultRepositoryName"];
-                defaultPrintResult =testConfig["defaultPrintResult"].ToString();
-                useDefaults = Boolean.Parse(testConfig["useDefaults"].ToString());
+                defaultPrintResult = testConfig["defaultPrintResult"].ToString();
             }
-            
-            
+
             if (useDefaults)
             {
                 ReSTHomeUri = defaultReSTHomeUri;
@@ -233,15 +224,46 @@ namespace Emc.Documentum.Rest.Test
                 password = defaultPassword;
                 repositoryName = defaultRepositoryName;
                 printResult = Boolean.Parse(defaultPrintResult);
+
+                Console.Write("Configuration completed with default settings. ");
+                printConfiguration();
             }
             else
             {
                 readSetupParameters(defaultReSTHomeUri, defaultUsername, defaultPassword, defaultRepositoryName, defaultPrintResult);
+                Console.Write("Re-configuration completed. ");
+                printConfiguration();
+                Console.WriteLine("Press any key to continue...\r\n");
             }
-            client = new ReSTController(null, null); // new ReSTController(username, password);
+            
+            client = String.IsNullOrEmpty(password) ? new ReSTController(null, null) : new ReSTController(username, password);
             // alternatively, you can choose .net default data contract serializer: new DefaultDataContractJsonSerializer();
             client.JsonSerializer = new JsonDotnetJsonSerializer();
-            Console.WriteLine();
+        }
+
+        private static NameValueCollection getDefaultConfiguration()
+        {
+            try
+            {
+                return ConfigurationManager.GetSection("restconfig") as NameValueCollection;
+            }
+            catch (ConfigurationErrorsException se)
+            {
+                Console.WriteLine("Configuration could  not load. If you are running under Visual Studio, ensure:\n" +
+                    "\n\"<section name=\"restconfig\" type=\"System.Configuration.NameValueSectionHandler\"/> is used. " +
+                    "\nIf running under Mono, ensure: " +
+                    "\n<section name=\"restconfig\" type=\"System.Configuration.NameValueSectionHandler,System\"/> is used");
+                return null;
+            }
+        }
+
+        private static void printConfiguration()
+        {
+            Console.WriteLine("Please review your settings below:\r\n");
+            Console.WriteLine("\tHome document URL \t[" + ReSTHomeUri + "]");
+            Console.WriteLine("\tUser login name \t[" + username + "]");
+            Console.WriteLine("\tRepository name \t[" + repositoryName + "]");
+            Console.WriteLine("\tPrint the result? \t[" + printResult + "]\r\n");
         }
 
         public static void readSetupParameters(string defaultReSTHomeumentUri, string defaultUsername, string defaultPassword,
