@@ -117,11 +117,11 @@ namespace DroidBlankTest1
 
             long testStart = DateTime.Now.Ticks;
             base.OnCreate(bundle);
-            ReSTController client = new ReSTController("dmadmin", "I8@#fbbq");
-            ReSTService home = client.Get<ReSTService>("http://10.0.12.31:8080/rest/services", null);
+            RestController client = new RestController("dmadmin", "I8@#fbbq");
+            RestService home = client.Get<RestService>("http://10.0.12.31:8080/Rest/services", null);
             if (home == null)
             {
-                //WriteOutput("\nUnable to get Rest Service at: " + ReSTHomeUri + " check to see if the service is available.");
+                //WriteOutput("\nUnable to get Rest Service at: " + RestHomeUri + " check to see if the service is available.");
                 return;
             }
             home.SetClient(client);
@@ -132,7 +132,7 @@ namespace DroidBlankTest1
             GetObjects(
                     "select r_object_id, object_name, r_object_type from dm_cabinet", DEFAULT_OPTIONS);
 
-            WriteOutput("Took " + ((DateTime.Now.Ticks - testStart) / TimeSpan.TicksPerMillisecond) + "ms to get ReSTService and cabinet list");
+            WriteOutput("Took " + ((DateTime.Now.Ticks - testStart) / TimeSpan.TicksPerMillisecond) + "ms to get RestService and cabinet list");
 
             UpdateListView();
             

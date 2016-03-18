@@ -28,33 +28,35 @@ namespace Emc.Documentum.Rest.Test
         {
 
             Console.ForegroundColor = ConsoleColor.White;
-           // Console.BufferHeight = 360;
-           // Console.BufferHeight = 210;
+            // Console.BufferHeight = 360;
+            // Console.BufferHeight = 210;
             NameValueCollection config = getDefaultConfiguration();
             bool useDefault = config != null && Boolean.Parse(config["useDefaults"]);
             SetupTestData(useDefault);
-            SetupTestData(false);
 
             String line = PrintMenu();
-            while(!(line.Equals("x") || line.Equals("exit")) )
+            while (!(line.Equals("x") || line.Equals("exit")))
             {
                 if (line.Equals("exit")) break;
                 String test = "";
-                if(line != null && !line.Trim().Equals("")) {
-                    if(line.IndexOf(" ") > 0) {
+                if (line != null && !line.Trim().Equals(""))
+                {
+                    if (line.IndexOf(" ") > 0)
+                    {
                         test = line.Substring(0, line.IndexOf(" "));
                     }
                     else
                     {
                         test = line;
                     }
-                } 
-                if(!test.Equals("")) {
+                }
+                if (!test.Equals(""))
+                {
                     String cmd = line.Substring(line.IndexOf(" ") + 1);
                     if (cmd.Equals(line)) cmd = "";
 
                     //Mock of setting up an array for properties to be passed
-                 var properties=new List<KeyValuePair<string,string>> ();
+                    var properties = new List<KeyValuePair<string, string>>();
                     properties.Add(new KeyValuePair<string, string>("object_name", @"LIKE '%Test%'"));
                     properties.Add(new KeyValuePair<string, string>("object_type", "dm_document"));
 
@@ -63,7 +65,7 @@ namespace Emc.Documentum.Rest.Test
                         case "dql":
                             DqlQueryTest.Run(client, RestHomeUri, cmd, 20, false, repositoryName, printResult);
                             break;
- 
+
                         case "test": // will run the conditions for Processdoc
                             //if (cmd == null || cmd.Trim().Equals("") || cmd.Equals(test))
                             //{
@@ -79,7 +81,7 @@ namespace Emc.Documentum.Rest.Test
                             {
                                 for (int i = 0; i < threadCount; i++)
                                 {
-                                    UseCaseTests aTest = new UseCaseTests(new RestController(username, password), 
+                                    UseCaseTests aTest = new UseCaseTests(new RestController(username, password),
                                             RestHomeUri, repositoryName, threadCount > 1 ? true : false, "/Temp/Test-" + DateTime.Now.Ticks, i, numDocs);
                                     ThreadStart job = new ThreadStart(aTest.Start);
                                     new Thread(job).Start();
@@ -96,7 +98,7 @@ namespace Emc.Documentum.Rest.Test
                             break;
 
                         case "getmimetype":
-                            Console.WriteLine("Mime-Type for " + cmd + " is:"+ObjectUtil.getMimeTypeFromFileName(cmd));
+                            Console.WriteLine("Mime-Type for " + cmd + " is:" + ObjectUtil.getMimeTypeFromFileName(cmd));
                             break;
                         case "getformat":
                             Console.WriteLine("Format for " + cmd + " is:" + ObjectUtil.getDocumentumFormatForFile(cmd));
@@ -128,7 +130,7 @@ namespace Emc.Documentum.Rest.Test
                         case "timezone":
                             Search options = new Search();
                             options.TimeZone = cmd;
-                            break; 
+                            break;
                         case "reconfig":
                             SetupTestData(false);
                             break;
@@ -138,7 +140,7 @@ namespace Emc.Documentum.Rest.Test
 
                     }
                 }
-                if(!test.Equals("cls")) 
+                if (!test.Equals("cls"))
                 {
                     Console.ReadKey();
                 }
@@ -151,18 +153,18 @@ namespace Emc.Documentum.Rest.Test
 
         private static int getInputNumber(string title, int value)
         {
-            
+
             string input = "";
             try
             {
-                Console.WriteLine("\t" + title + " ["+value+"]");
+                Console.WriteLine("\t" + title + " [" + value + "]");
                 Console.WriteLine();
                 input = getLineOfInput();
                 if (input != null && !input.Trim().Equals(""))
                 {
                     value = int.Parse(input);
                 }
-                
+
             }
             catch (Exception e)
             {
@@ -184,7 +186,7 @@ namespace Emc.Documentum.Rest.Test
             Console.WriteLine("\ttest - Runs the end to end tests with optional."
                             + "\n\t\tthreads and number of documents. The old "
                             + "\n\t\tProcessdoc command will do the same test.");
-            
+
 
 
             //Console.WriteLine("\tcls - Clear the console");
@@ -194,41 +196,31 @@ namespace Emc.Documentum.Rest.Test
             return getLineOfInput();
         }
 
-        private static String getLineOfInput() {
+        private static String getLineOfInput()
+        {
             String line = Console.ReadLine();
             Console.WriteLine();
             return line;
         }
+
         private static void SetupTestData(bool useDefaults)
         {
-            string defaultRestHomeUri = @"http://localhost:8080/dctm-rest/services";
+            string defaultRestHomeUri = @"http://localhost:8080/dctm-Rest/services";
             string defaultUsername = "dmadmin";
             string defaultPassword = "password";
             string defaultRepositoryName = "Process";
             string defaultPrintResult = "false";
 
-			NameValueCollection testConfig=null;
-			try {
-				testConfig = ConfigurationManager.GetSection("restconfig") as NameValueCollection;
-
-			} catch(ConfigurationErrorsException se) {
-				Console.WriteLine("Configuration could  not load. If you are running under Visual Studio, ensure:\n" +
-					"\n\"<section name=\"restconfig\" type=\"System.Configuration.NameValueSectionHandler\"/> is used. " +
-					"\nIf running under Mono, ensure: " + 
-					"\n<section name=\"restconfig\" type=\"System.Configuration.NameValueSectionHandler,System\"/> is used");
-				useDefaults = false;
-			}
+            NameValueCollection testConfig = getDefaultConfiguration();
             if (testConfig != null)
             {
-                defaultRestHomeUri = testConfig["defaultRestHomeUri"]; 
+                defaultRestHomeUri = testConfig["defaultRestHomeUri"];
                 defaultUsername = testConfig["defaultUsername"];
                 defaultPassword = testConfig["defaultPassword"];
                 defaultRepositoryName = testConfig["defaultRepositoryName"];
-                defaultPrintResult =testConfig["defaultPrintResult"].ToString();
-                useDefaults = Boolean.Parse(testConfig["useDefaults"].ToString());
+                defaultPrintResult = testConfig["defaultPrintResult"].ToString();
             }
-            
-            
+
             if (useDefaults)
             {
                 RestHomeUri = defaultRestHomeUri;
@@ -236,21 +228,52 @@ namespace Emc.Documentum.Rest.Test
                 password = defaultPassword;
                 repositoryName = defaultRepositoryName;
                 printResult = Boolean.Parse(defaultPrintResult);
+
+                Console.Write("Configuration completed with default settings. ");
+                printConfiguration();
             }
             else
             {
                 readSetupParameters(defaultRestHomeUri, defaultUsername, defaultPassword, defaultRepositoryName, defaultPrintResult);
+                Console.Write("Re-configuration completed. ");
+                printConfiguration();
+                Console.WriteLine("Press any key to continue...\r\n");
             }
-            client = new RestController(null, null); // new RestController(username, password);
+
+            client = String.IsNullOrEmpty(password) ? new RestController(null, null) : new RestController(username, password);
             // alternatively, you can choose .net default data contract serializer: new DefaultDataContractJsonSerializer();
             client.JsonSerializer = new JsonDotnetJsonSerializer();
-            Console.WriteLine();
+        }
+
+        private static NameValueCollection getDefaultConfiguration()
+        {
+            try
+            {
+                return ConfigurationManager.GetSection("Restconfig") as NameValueCollection;
+            }
+            catch (ConfigurationErrorsException se)
+            {
+                Console.WriteLine("Configuration could  not load. If you are running under Visual Studio, ensure:\n" +
+                    "\n\"<section name=\"Restconfig\" type=\"System.Configuration.NameValueSectionHandler\"/> is used. " +
+                    "\nIf running under Mono, ensure: " +
+                    "\n<section name=\"Restconfig\" type=\"System.Configuration.NameValueSectionHandler,System\"/> is used");
+                return null;
+            }
+        }
+
+        private static void printConfiguration()
+        {
+            Console.WriteLine("Please review your settings below:\r\n");
+            Console.WriteLine("\tHome document URL \t[" + RestHomeUri + "]");
+            Console.WriteLine("\tUser login name \t[" + username + "]");
+            Console.WriteLine("\tRepository name \t[" + repositoryName + "]");
+            Console.WriteLine("\tPrint the result? \t[" + printResult + "]\r\n");
         }
 
         public static void readSetupParameters(string defaultRestHomeumentUri, string defaultUsername, string defaultPassword,
             string defaultRepositoryName, string defaultPrintResult)
         {
-            Console.WriteLine("$$$$ Test for the Documentum REST .NET Client Reference Implementation$$$$\r\n");
+            Console.WriteLine("$$$$ Test for the Documentum Rest .NET Client Reference Implementation$$$$\r\n");
             Console.Write("Set the home document URL [" + defaultRestHomeumentUri + "] :");
             RestHomeUri = Console.ReadLine();
             if (String.IsNullOrEmpty(RestHomeUri)) RestHomeUri = defaultRestHomeumentUri;
@@ -273,3 +296,4 @@ namespace Emc.Documentum.Rest.Test
         }
     }
 }
+
