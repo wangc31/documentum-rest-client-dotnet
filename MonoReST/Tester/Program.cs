@@ -249,7 +249,7 @@ namespace Emc.Documentum.Rest.Test
         {
             try
             {
-                return ConfigurationManager.GetSection("Restconfig") as NameValueCollection;
+                return ConfigurationManager.GetSection("restconfig") as NameValueCollection;
             }
             catch (ConfigurationErrorsException se)
             {
