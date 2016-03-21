@@ -858,8 +858,8 @@ namespace Emc.Documentum.Rest.Test
                 String parentFolderPath = childPathAndFolder[0];
                 String childFolderName = childPathAndFolder[1];
                 Folder childFolder = repository.getFolderByQualification(
-                    String.Format("dm_folder where folder('{0}') and object_name='{1}'", parentFolderPath,
-                    childFolderName), new FeedGetOptions { Inline = true, Links = true });
+                    String.Format("dm_folder where r_object_id = '{0}'", 
+                    docToMove.getRepeatingValue("i_folder_id", 0)), new FeedGetOptions { Inline = true, Links = true });
                 List<String> parentPathAndFolder = ObjectUtil.getPathAndFolderNameFromPath(parentFolderPath);
                 String folderPath = parentPathAndFolder[0];
                 String parentFolderName = parentPathAndFolder[1];

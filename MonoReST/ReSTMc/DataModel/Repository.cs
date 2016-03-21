@@ -698,18 +698,33 @@ namespace Emc.Documentum.Rest.DataModel
         /// <returns>RestDocument</returns>
         public RestDocument ImportDocumentAsNewVersion(RestDocument doc, FileInfo file)
         {
-            Feed<OutlineAtomContent> versions = doc.GetVersionHistory<OutlineAtomContent>(null);
-            List<Entry<OutlineAtomContent>> entries = versions.Entries;
-            
-            // If the document is not already checked out, check it out.
-            if (!doc.IsCheckedOut()) doc = doc.Checkout();
-            RestDocument checkinDoc = NewDocument("SystemA_doc");
             GenericOptions checkinOptions = new GenericOptions();
             checkinOptions.SetQuery("format", ObjectUtil.getDocumentumFormatForFile(file.Name));
             checkinOptions.SetQuery("page", 0);
             checkinOptions.SetQuery("primary", true);
             checkinOptions.SetQuery("version-label", "ImportAsNewVersion");
-            return doc.CheckinMinor(doc, file.OpenRead(), ObjectUtil.getMimeTypeFromFileName(file.Name), checkinOptions);
+            return ImportDocumentAsNewVersion(doc, file.OpenRead(), ObjectUtil.getMimeTypeFromFileName(file.Name), checkinOptions);
+        }
+
+        public RestDocument ImportDocumentAsNewVersion(RestDocument doc, Stream contentStream, String mimeType, GenericOptions checkinOptions)
+        {
+            Feed<OutlineAtomContent> versions = doc.GetVersionHistory<OutlineAtomContent>(null);
+            List<Entry<OutlineAtomContent>> entries = versions.Entries;
+
+            // If the document is not already checked out, check it out.
+            if (!doc.IsCheckedOut()) doc = doc.Checkout();
+            RestDocument checkinDoc = NewDocument(doc.getAttributeValue("object_name").ToString());
+            if(!checkinOptions.pa.ContainsKey("format") {
+                checkinOptions.SetQuery("format", (dmFormatName == null || dmFormatName.Trim().Equals("")? doc.getAttributeValue("a_content_type") : dmFormatName);
+            }
+            if(!checkinOptions.pa.ContainsKey("page")) {
+                checkinOptions.SetQuery("page", 0);
+            }
+            if(!checkinOptions.pa.ContainsKey("primary")) {
+                checkinOptions.SetQuery("primary", true);
+            }
+            
+            return doc.CheckinMinor(doc, contentStream, ObjectUtil.getMimeTypeFromFileName(file.Name), checkinOptions);
         }
 
         /// <summary>
