@@ -44,7 +44,7 @@ Go to the `<restConfig>` section and become familiar with the descriptions and w
 The path you choose should have a number of files directly under this directory. The Tester will choose a number of files from here at random as samples to upload.
 
 __Step 3__
-You can set the `randomemailsdirectory` to the same value as `randomfilesdirectory`, this is not currently used with base Rest services, it is only available with extensions enabled. If you need an extension for Rest that imports emails and splits out the attachment files, have your account rep contact ichael.mccollough@emc.com.
+You can set the `randomemailsdirectory` to the same value as `randomfilesdirectory`, this is not currently used with base Rest services, it is only available with extensions enabled. If you need an extension for Rest that imports emails and splits out the attachment files, have your account rep contact michael.mccollough@emc.com.
 
 __Step 4__
 You can update the `defaultReSTHomeUri`, `defaultUsername`, `defaultRepositoryName`, 	`defaultPassword` values to the values for your environment.
