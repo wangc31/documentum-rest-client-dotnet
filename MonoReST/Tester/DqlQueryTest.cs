@@ -37,9 +37,9 @@ namespace Emc.Documentum.Rest.Test
                     {
                         StringBuilder values = new StringBuilder();
                         bool first=true;
-                        Console.WriteLine(String.Format("\t\t\tName: {0} ID: {1}",
-                        obj.getAttributeValue("object_name").ToString(),
-                        obj.getAttributeValue("r_object_id").ToString()));
+                        Console.WriteLine(String.Format("\tName: {0} \t\tID: {1}",
+                        GetAttr(obj, new string[] {"object_name", "user_name", "group_name", "name"}),
+                        GetAttr(obj, new string[] {"r_object_id"})));
                         foreach (string attribute in attributes)
                         {
                             if(first) {
@@ -66,6 +66,19 @@ namespace Emc.Documentum.Rest.Test
                     
             }
             if (printResult) Console.WriteLine(queryResult==null ? "NULL" : queryResult.ToString());
+        }
+
+        private static string GetAttr(PersistentObject po, string[] attrs)
+        {
+            foreach (string attr in attrs)
+            {
+                var v = po.getAttributeValue(attr);
+                if (v != null)
+                {
+                    return v.ToString();
+                }
+            }
+            return "UNDEFINED";
         }
 
     }

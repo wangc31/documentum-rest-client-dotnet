@@ -54,6 +54,7 @@
     <Reference Include="System.Configuration" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Arguments.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="DqlQueryTest.cs" />
     <Compile Include="Logger.cs">
