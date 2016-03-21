@@ -36,8 +36,8 @@ namespace Emc.Documentum.Rest.Test
         string renditionsDirectory = @"Renditions";
         string primaryContentDirectory = @"PrimaryContent";
         string ProcessBasePath = "/RestTester/TestFiles/";
-        List<string> requestList = new List<string>();
-        string caseId;
+        List<string> childList = new List<string>();
+        string parentFolderId;
         bool openEachFile = false;
         bool showdownloadedfiles = false;
         Logger loggerForm = null;
@@ -65,17 +65,14 @@ namespace Emc.Documentum.Rest.Test
             this.numDocs = numDocs;
             this.testStart = DateTime.Now;
             this.testPrefix = testStart.ToString("yyyyMMddhhmmss")+"-"+threadNum;
-            this.caseId = "CASE-" + testPrefix; // new Random().Next(0, 5); ;
-            client.Logger = new LoggerFacade("RestServices", "NA", caseId, caseId);
+            this.parentFolderId = "CASE-" + testPrefix; // new Random().Next(0, 5); ;
+            client.Logger = new LoggerFacade("RestServices", "NA", parentFolderId, parentFolderId);
         }
 
-        /// <summary>
-        /// Unique list of SupportingDocuments (not Cases)
-        /// </summary>
-        /// <param name="request"></param>
-        private void addSupportingDoc(string supportingDoc) {
-			if(!requestList.Contains(supportingDoc)) {
-				requestList.Add(supportingDoc);
+
+        private void addSupportingDoc(string childFolderDoc) {
+			if(!childList.Contains(childFolderDoc)) {
+				childList.Add(childFolderDoc);
             }
         }
 
@@ -203,7 +200,7 @@ namespace Emc.Documentum.Rest.Test
             if (useFormLogging)
             {
                 loggerForm = new Logger();
-                loggerForm.setTitle(caseId);
+                loggerForm.setTitle(parentFolderId);
                 loggerForm.AutoSize = true;
                 loggerForm.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
                 int offset = threadNum == 0 ? threadNum : threadNum * 250;
@@ -248,7 +245,7 @@ namespace Emc.Documentum.Rest.Test
                 repository.FolderType = "dm_folder";
                 string testName = "";
                 try {
-                    // Import all documents into the holding area (Instantiation Form) before the documents are assigned to case/request
+                    // Import all documents into the holding area (Instantiation Form) before the documents are assigned to parentFolder/child
                     testName = "CreateTempDocs";
                     WriteOutput("-----BEGIN " + testName + "--------------");
                     tStart = DateTime.Now.Ticks;
@@ -262,13 +259,13 @@ namespace Emc.Documentum.Rest.Test
                 }
 
                 try {
-                    // Assign Documents to case/supportingDocs
+                    // Assign Documents to parentFolder/childFolderDocs
                     // When AssignDocs completes, the AssignDocument list will contain the new ObjectIds of each document 
-                    // that was assigned to the case
+                    // that was assigned to the parentFolder
                     testName = "AssignDocs";
                     WriteOutput("-----BEGIN " + testName + "-------------------------");
                     tStart = DateTime.Now.Ticks;
-                    AssignToCaseSupportingDoc(repository, assignDocs);
+                    AssignToFolders(repository, assignDocs);
                     WriteOutput("Assigned " + assignDocs.Count + " in " + ((DateTime.Now.Ticks - tStart) / TimeSpan.TicksPerMillisecond) + "ms");
                     WriteOutput("-----END " + testName + "---------------------------");
                 }
@@ -293,11 +290,11 @@ namespace Emc.Documentum.Rest.Test
 
                 try
                 {
-                    testName = "ReassignDocumentsToCase (Move documents)";
+                    testName = "MoveDocumentsToParent (Move documents)";
                     WriteOutput("-----BEGIN " + testName + "------------");
                     tStart = DateTime.Now.Ticks;
-                    // Randomly take some assigned documents and re-assign them (Move from a templ location to another location))
-                    reassignRequestDocumentsToCase(repository, assignDocs);
+                    // Randomly take some assigned documents and re-assign them (Move from a temp location to another location))
+                    reassignChildDocumentsToParent(repository, assignDocs);
                     WriteOutput("Assigned " + Math.Ceiling(assignDocs.Count * .30) + " in " + ((DateTime.Now.Ticks - tStart) / TimeSpan.TicksPerMillisecond) + "ms");
                     WriteOutput("-----END " + testName + "--------------");
                 }
@@ -389,7 +386,7 @@ namespace Emc.Documentum.Rest.Test
                     WriteOutput("-----BEGIN " + testName + "----------------");
                     tStart = DateTime.Now.Ticks;
                     ReturnListOfDocuments(repository, assignDocs);
-                    WriteOutput("List of Documents for 5 supportingDocs returned in " + ((DateTime.Now.Ticks - tStart) / TimeSpan.TicksPerMillisecond) + "ms");
+                    WriteOutput("List of Documents for 5 childFolderDocs returned in " + ((DateTime.Now.Ticks - tStart) / TimeSpan.TicksPerMillisecond) + "ms");
                     WriteOutput("-----END " + testName + "------------------");
                 }
                 catch (Exception e)
@@ -419,11 +416,11 @@ namespace Emc.Documentum.Rest.Test
             //
             //                try
             //                {
-            //                    testName = "Close Case or Request";
+            //                    testName = "Close Parent or Child";
             //                    WriteOutput("-----BEGIN " + testName + "----------------");
             //                    tStart = DateTime.Now.Ticks;
-            //                    CloseSupportingDocThenCase(repository);
-            //                    WriteOutput("Closed " + requestList.Count + " cases/supportingDocs in " + ((DateTime.Now.Ticks - tStart) / TimeSpan.TicksPerMillisecond) + "ms");
+            //                    CloseSupportingDocThenParent(repository);
+            //                    WriteOutput("Closed " + childList.Count + " parentFolders/childFolderDocs in " + ((DateTime.Now.Ticks - tStart) / TimeSpan.TicksPerMillisecond) + "ms");
             //                    WriteOutput("-----END " + testName + "------------------");
             //                }
             //                catch (Exception e)
@@ -433,11 +430,11 @@ namespace Emc.Documentum.Rest.Test
 
             //                try
             //                {
-            //                    testName = "Re-Open Case or Request";
+            //                    testName = "Re-Open Parent or Child";
             //                    WriteOutput("-----BEGIN " + testName + "----------------");
             //                    tStart = DateTime.Now.Ticks;
-            //                    ReOpenCaseOrRequest(repository);
-            //                    WriteOutput("Closed " + requestList.Count + " cases/supportingDocs in " + ((DateTime.Now.Ticks - tStart) / TimeSpan.TicksPerMillisecond) + "ms");
+            //                    ReOpenParentOrChild(repository);
+            //                    WriteOutput("Closed " + childList.Count + " parentFolders/childFolderDocs in " + ((DateTime.Now.Ticks - tStart) / TimeSpan.TicksPerMillisecond) + "ms");
             //                    WriteOutput("-----END " + testName + "------------------");
             //                }
             //                catch (Exception e)
@@ -459,9 +456,9 @@ namespace Emc.Documentum.Rest.Test
 			if(Type.GetType ("Mono.Runtime") == null) {
 	                try
 	                {
-	                    testName = "ExportCase";
+	                    testName = "ExportParent";
 	                    WriteOutput("---------------BEGIN " + testName + " ------------------");
-	                    ExportCase(repository);
+	                    ExportParent(repository);
 	                    WriteOutput("-----------------END " + testName + " ------------------");
 	                }
 	                catch (Exception e)
@@ -498,7 +495,7 @@ namespace Emc.Documentum.Rest.Test
         private void ExportFiles(Repository repository)
         {
             FeedGetOptions options = new FeedGetOptions { ItemsPerPage = 10 };
-            Feed<RestDocument> feedDocs = repository.ExecuteDQL<RestDocument>("select r_object_id from dm_document where folder('" + ProcessBasePath + caseId + "', DESCEND)", options);
+            Feed<RestDocument> feedDocs = repository.ExecuteDQL<RestDocument>("select r_object_id from dm_document where folder('" + ProcessBasePath + parentFolderId + "', DESCEND)", options);
             List<RestDocument> docs = ObjectUtil.getFeedAsList<RestDocument>(feedDocs, true);
             StringBuilder ids = new StringBuilder();
             int pass = 0;
@@ -512,15 +509,15 @@ namespace Emc.Documentum.Rest.Test
                     ids.Append(",").Append(id);
                 }
             }
-            WriteOutput("[ExportFilesToZip] - Export list of files completed and stored: " + testDirectory + Path.DirectorySeparatorChar + "RandomDocsInCase.zip");
-            repository.ExportDocuments(ids.ToString(), testDirectory + Path.DirectorySeparatorChar + "RandomDocsInCase.zip");
+            WriteOutput("[ExportFilesToZip] - Export list of files completed and stored: " + testDirectory + Path.DirectorySeparatorChar + "RandomDocsInParent.zip");
+            repository.ExportDocuments(ids.ToString(), testDirectory + Path.DirectorySeparatorChar + "RandomDocsInParent.zip");
         }
 
-        private void ExportCase(Repository repository)
+        private void ExportParent(Repository repository)
         {
-            string casePath = ProcessBasePath + caseId;
-			FileInfo zipFile = repository.ExportFolder(casePath, testDirectory + Path.DirectorySeparatorChar + caseId + ".zip");
-			WriteOutput("[ExportFolderToZip] Export Folder completed and stored: " + testDirectory + Path.DirectorySeparatorChar + caseId + ".zip");
+            string parentPath = ProcessBasePath + parentFolderId;
+			FileInfo zipFile = repository.ExportFolder(parentPath, testDirectory + Path.DirectorySeparatorChar + parentFolderId + ".zip");
+			WriteOutput("[ExportFolderToZip] Export Folder completed and stored: " + testDirectory + Path.DirectorySeparatorChar + parentFolderId + ".zip");
         }
 
         private void CreateFromTemplate(Repository repository, List<AssignDocument> assignDocs)
@@ -539,12 +536,12 @@ namespace Emc.Documentum.Rest.Test
                         doc.getAttributeValue("object_name").ToString(),
                         doc.getAttributeValue("r_object_id").ToString()));
             }
-            List<string> req = requestList;
+            List<string> req = childList;
             for (int i = 0; i < 10; i++)
             {
                 AssignDocument assignDoc = assignDocs[rnd.Next(0, assignDocs.Count)];
                 string assignPath = assignDoc.getPath();
-                string requestId = assignDoc.RequestId;
+                string childId = assignDoc.ChildId;
                 //select one of the documents
                 RestDocument template = docs[rnd.Next(0, resultSamples)];
                 RestDocument newDoc = repository.copyDocument(template.getAttributeValue("r_object_id").ToString(), ProcessBasePath + assignPath);
@@ -554,8 +551,8 @@ namespace Emc.Documentum.Rest.Test
                 newDoc.setAttributeValue("object_name", documentName);
                 newDoc.Save();
                 string objectId = newDoc.getAttributeValue("r_object_id").ToString();
-                //String requestId = caseId + " REQUEST-" + new Random().Next(0, 5);
-                assignDocs.Add(new AssignDocument(objectId, caseId, requestId));
+                //String childId = parentFolderId + " CHILD-" + new Random().Next(0, 5);
+                assignDocs.Add(new AssignDocument(objectId, parentFolderId, childId));
                 WriteOutput("\t[CreateDocumentFromTemplate] Created document " + documentName + " from template " + template.getAttributeValue("object_name").ToString());
             }
         }
@@ -568,7 +565,7 @@ namespace Emc.Documentum.Rest.Test
             //Thread.Sleep(10000);
             Search search = new Search();
             search.Query = "document";
-            search.Locations = "/SystemA/Process/" + caseId; // requestList[new Random().Next(0, requestList.Count)];
+            search.Locations = "/SystemA/Process/" + parentFolderId; // childList[new Random().Next(0, childList.Count)];
 
             search.ItemsPerPage = 20;
             //search.PageNumber = 1;
@@ -609,7 +606,7 @@ namespace Emc.Documentum.Rest.Test
             int fileCount = dirInfo.GetFiles().Count();
             for (int i = 0; i < (Math.Ceiling(fileCount * pctTest * 10)); i++)
             {
-                string assignPath = requestList[rnd.Next(0, requestList.Count)];
+                string assignPath = childList[rnd.Next(0, childList.Count)];
                 FileInfo file = ObjectUtil.getRandomFileFromDirectoryByExtension(randomEmailsDirectory, "msg");
                 if (file == null)
                 {
@@ -644,43 +641,43 @@ namespace Emc.Documentum.Rest.Test
             } 
         }
 
-        private void CloseSupportingDocThenCase(Repository repository)
+        private void CloseSupportingDocThenParent(Repository repository)
         {
             WriteOutput("\t[DeclareRecord,SetCloseCondition,UnsetCloseCondition]");
-            foreach (string cr in requestList)
+            foreach (string cr in childList)
             {
-                Folder requestFolder = null;
-                requestFolder = repository.getFolderByPath(cr);
+                Folder childFolder = null;
+                childFolder = repository.getFolderByPath(cr);
                 DateTime closeDate = DateTime.Now;
-                List<PersistentObject> retainers = repository.CloseCaseOrRequest(Repository.RecordType.Extradition, requestFolder, closeDate);
+                List<PersistentObject> retainers = repository.CloseFolderAndStartRetention(Repository.RecordType.Extradition, childFolder, closeDate);
                 DateTime checkDate = DateTime.Parse(retainers[0].getAttributeValue("event_date").ToString());
                 try
                 {
 
                     if (checkDate.ToShortDateString().Equals(closeDate.ToShortDateString()))
                     {
-                        WriteOutput("\t\t[SetCloseCondition] - Closing REQUEST" + requestFolder.getAttributeValue("object_name") + " Declared as: " + Repository.RecordType.Extradition);
+                        WriteOutput("\t\t[SetCloseCondition] - Closing CHILD" + childFolder.getAttributeValue("object_name") + " Declared as: " + Repository.RecordType.Extradition);
                     }
                     else throw new Exception();
                 }
                 catch (Exception e)
                 {
-                    WriteOutput("\t\t#####FAILED!!E####[SetCloseCondition] - Closing REQUEST" + requestFolder.getAttributeValue("object_name") + "  as: " + Repository.RecordType.Extradition);
+                    WriteOutput("\t\t#####FAILED!!E####[SetCloseCondition] - Closing CHILD" + childFolder.getAttributeValue("object_name") + "  as: " + Repository.RecordType.Extradition);
                 }
                 
             }
-            Folder caseFolder   = repository.getFolderByPath(ProcessBasePath + caseId);
-            repository.CloseCaseOrRequest(Repository.RecordType.MLAT, caseFolder, DateTime.Now);
-            WriteOutput("\t\t[SetCloseCondition] - Closing CASE " + caseFolder.getAttributeValue("object_name") + " Declared as: " + Repository.RecordType.MLAT);
+            Folder parentFolder   = repository.getFolderByPath(ProcessBasePath + parentFolderId);
+            repository.CloseFolderAndStartRetention(Repository.RecordType.MLAT, parentFolder, DateTime.Now);
+            WriteOutput("\t\t[SetCloseCondition] - Closing CASE " + parentFolder.getAttributeValue("object_name") + " Declared as: " + Repository.RecordType.MLAT);
                 
         }
 
-        private void ReOpenCaseOrRequest(Repository repository)
+        private void ReOpenParentOrChild(Repository repository)
         {
             
-            for (int i = 0; i < (Math.Ceiling(requestList.Count * .20)); i++)
+            for (int i = 0; i < (Math.Ceiling(childList.Count * .20)); i++)
             {
-                string cr = requestList[i];
+                string cr = childList[i];
                 Repository.RecordType type = Repository.RecordType.MLAT;
                 Folder folder = null;
                 if (cr.Contains("/"))
@@ -693,7 +690,7 @@ namespace Emc.Documentum.Rest.Test
                     folder = repository.getFolderByPath(ProcessBasePath + cr);
                 }
                 // Pass a null date to zero out the Close Date event on the retainer to stop aging
-                List<PersistentObject> retainers = repository.CloseCaseOrRequest(type, folder, new DateTime());
+                List<PersistentObject> retainers = repository.CloseFolderAndStartRetention(type, folder, new DateTime());
 
 
                 if (retainers[0].getAttributeValue("event_date") == null)
@@ -710,7 +707,7 @@ namespace Emc.Documentum.Rest.Test
         private void ReturnListOfDocuments(Repository repository, List<AssignDocument> assignDocs)
         {
             Random rnd = new Random();
-            // Return a list of documents in a case
+            // Return a list of documents in a parentFolder
             int resultSamples = assignDocs.Count < 5? assignDocs.Count : 5;
             for(int i=0; i<resultSamples;i++) {
                 string path = ProcessBasePath + assignDocs[rnd.Next(0,resultSamples)];
@@ -842,11 +839,11 @@ namespace Emc.Documentum.Rest.Test
         }
 
         /// <summary>
-        /// Move 5 percent of the (no less than 1) documents from request to case level (Shows Re-Filing Documents)
+        /// Move 5 percent of the (no less than 1) documents from child to parentFolder level (Shows Re-Filing Documents)
         /// </summary>
         /// <param name="assignDocs"></param>
         /// <param name="repository"></param>
-        private void reassignRequestDocumentsToCase(Repository repository, List<AssignDocument> assignDocs)
+        private void reassignChildDocumentsToParent(Repository repository, List<AssignDocument> assignDocs)
         {
             List<AssignDocument> newList = new List<AssignDocument>(assignDocs);
             double assignCount = Math.Ceiling(newList.Count * .30);
@@ -856,29 +853,29 @@ namespace Emc.Documentum.Rest.Test
                 // Make sure we do not use this again
                 newList.Remove(aDoc);
                 String currentPath = ProcessBasePath + aDoc.getPath();
-                RestDocument docToMove = repository.getObjectById<RestDocument>(aDoc.DocumentId);//getDocumentByQualification(
-                    //String.Format("dm_document where r_object_id = '{0}'", aDoc.DocumentId),
-                    //new FeedGetOptions { Inline = true, Links = true });
-                List<String> requestPathAndFolder = ObjectUtil.getPathAndFolderNameFromPath(currentPath);
-                String caseFolderPath = requestPathAndFolder[0];
-                String requestFolderName = requestPathAndFolder[1];
-                Folder requestFolder = repository.getFolderByQualification(
-                    String.Format("dm_folder where folder('{0}') and object_name='{1}'", caseFolderPath,
-                    requestFolderName), new FeedGetOptions { Inline = true, Links = true });
-                List<String> casePathAndFolder = ObjectUtil.getPathAndFolderNameFromPath(caseFolderPath);
-                String caseParentFolder = casePathAndFolder[0];
-                String caseFolderName = casePathAndFolder[1];
-                Folder caseFolder = repository.getFolderByQualification(
-                    String.Format("dm_folder where folder('{0}') and object_name='{1}'", caseParentFolder,
-                    caseFolderName), new FeedGetOptions { Inline = true, Links = true });
-                repository.moveDocument(docToMove, requestFolder, caseFolder);
-                WriteOutput("\t\t[MoveDocument] - RestDocument reassigned from " + currentPath + " to " + caseFolderPath);
+                RestDocument docToMove = repository.getObjectById<RestDocument>(aDoc.DocumentId);
+                List<String> childPathAndFolder = ObjectUtil.getPathAndFolderNameFromPath(currentPath);
+                String parentFolderPath = childPathAndFolder[0];
+                String childFolderName = childPathAndFolder[1];
+                Folder childFolder = repository.getFolderByQualification(
+                    String.Format("dm_folder where folder('{0}') and object_name='{1}'", parentFolderPath,
+                    childFolderName), new FeedGetOptions { Inline = true, Links = true });
+                List<String> parentPathAndFolder = ObjectUtil.getPathAndFolderNameFromPath(parentFolderPath);
+                String folderPath = parentPathAndFolder[0];
+                String parentFolderName = parentPathAndFolder[1];
+                Folder parentFolder = repository.getFolderByQualification(
+                    String.Format("dm_folder where folder('{0}') and object_name='{1}'", folderPath,
+                    parentFolderName), new FeedGetOptions { Inline = true, Links = true });
+                repository.moveDocument(docToMove, childFolder, parentFolder);
+                WriteOutput("\t\t[MoveDocument] - RestDocument reassigned from " + currentPath + " to " + parentFolderPath);
             }
         }
 
         /// <summary>
-        /// CreateTempDocs and AssignDocs, together, are the first use case from the Instantiation Wizard Form of Process
-        /// Encompases  [Import New RestDocument], [Copy/Move RestDocument], [DeleteDocument]
+        /// CreateTempDocs and AssignDocs, together, show how one might create documents in a temporary location, then move/assign
+        /// them to another location later. This is handly for the Tester application to be able to choose documents at random
+        /// for moving/linking and choosing a percentage of documents for performaing actions on.
+        /// Use Cases  [Import New RestDocument], [Copy/Move RestDocument], [DeleteDocument]
         ///             [Folder Structure]
         /// </summary>
         /// <param name="repository"></param>
@@ -893,7 +890,7 @@ namespace Emc.Documentum.Rest.Test
             WriteOutput("\tFolder: " + tempFolder.getAttributeValue("object_name") + ":" 
                 + tempFolder.getAttributeValue("r_object_id") + " successfully created!");
             WriteOutput("\tCreating " + numDocs + " random documents.");
-            string previousRequestId = null;
+            string previousChildId = null;
             for (int i = 0; i < numDocs; i++)
             {
                 FileInfo file = ObjectUtil.getRandomFileFromDirectory(randomFilesDirectory);
@@ -905,25 +902,25 @@ namespace Emc.Documentum.Rest.Test
                 WriteOutput("\t\t\t[DeDuplication] - Performing Duplicate Detection on content in holding area....");
                 CheckDuplicates(repository, tempDoc, tempPath);
 
-                // Cannot randomly assign cases as threads will step on each other. Limite one thread to one 
-                // case (which should be reflective of the actual use case).
+                // Cannot randomly assign parentFolders as threads will step on each other. Limit one thread to one 
+                // parentFolder 
                 
-                String requestId = caseId + " REQUEST-" + new Random().Next(0,5);
+                String childId = parentFolderId + " CHILD-" + new Random().Next(0,5);
                 String objectId = (String)tempDoc.getAttributeValue("r_object_id");
-                WriteOutput("[CreateAndAssignDocument] \t\tCreated " + tempDoc.getAttributeValue("object_name") + ":" + objectId + " Assigning to Case: " 
-                    + caseId + " Request: " + requestId);
+                WriteOutput("[CreateAndAssignDocument] \t\tCreated " + tempDoc.getAttributeValue("object_name") + ":" + objectId + " Assigning to Parent: " 
+                    + parentFolderId + " Child: " + childId);
                 WriteOutput("[ChangeExistingDocument] - ReFetching and Setting title attribute");
                 RestDocument doc = tempDoc.fetch<RestDocument>();
                 doc.setAttributeValue("title", "Set properties test");
                 doc.Save();
-                assignDocs.Add(new AssignDocument(objectId, caseId, requestId));
-                // To show we can assign the same document to multiple supportingDocs
-                if (previousRequestId != null && !previousRequestId.Equals(requestId))
+                assignDocs.Add(new AssignDocument(objectId, parentFolderId, childId));
+                // To show we can assign the same document to multiple childFolderDocs
+                if (previousChildId != null && !previousChildId.Equals(childId))
                 {
-                    WriteOutput("\t\t\tAssigning this document to another request to show the same document can be copied/assigned to multiple supportingDocs");
-                    assignDocs.Add(new AssignDocument(objectId, caseId, previousRequestId));
+                    WriteOutput("\t\t\tAssigning this document to another child to show the same document can be copied/assigned to multiple childFolderDocs");
+                    assignDocs.Add(new AssignDocument(objectId, parentFolderId, previousChildId));
                 }
-                previousRequestId = requestId;
+                previousChildId = childId;
             } // Done with temp creation loop
             return assignDocs;
         }
@@ -970,23 +967,23 @@ namespace Emc.Documentum.Rest.Test
         }
 
         /// <summary>
-        /// Called by CreateTempDocs in order to create case/supportingDocs and randomly assign documents to the cases.
+        /// Called by CreateTempDocs in order to create parent/child folders and randomly assign documents to parent/child folders.
         /// </summary>
         /// <param name="repository"></param>
         /// <param name="assignDocs"></param>
-        private void AssignToCaseSupportingDoc (Repository repository, List<AssignDocument> assignDocs)
+        private void AssignToFolders (Repository repository, List<AssignDocument> assignDocs)
         {
-            //WriteOutput("Getting the holding folder for documents prior to Case/Request assignment...");
+            //WriteOutput("Getting the holding folder for documents prior to Parent/Child assignment...");
             Folder tempFolder = repository.getFolderByQualification("dm_folder where any r_folder_path = '" 
                 + tempPath + "'", new FeedGetOptions{ Inline = true, Links = true });
             WriteOutput("\tAssigning Documents from folder: " + tempFolder.getAttributeValue("object_name"));
             foreach (AssignDocument assignDoc in assignDocs)
             {
-                String caseId = assignDoc.CaseId;
-                String requestId = assignDoc.RequestId;
-                //WriteOutput("Getting the Case/Request assignment folder...");
+                String parentFolderId = assignDoc.ParentId;
+                String childId = assignDoc.ChildId;
+                //WriteOutput("Getting the Parent/Child assignment folder...");
                 String assignPath = ProcessBasePath + assignDoc.getPath();
-                // Our case/request tracker for doing record declaration later
+                // Our parentFolder/child tracker for doing record declaration later
                 addSupportingDoc(assignPath);
                 Folder destinationDir = repository.getOrCreateFolderByPath(assignPath);
                 RestDocument docToCopy = repository.getObjectById<RestDocument>(assignDoc.DocumentId); // getDocumentByQualification("dm_document where r_object_id = '"
