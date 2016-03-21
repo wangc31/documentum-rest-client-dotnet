@@ -107,7 +107,7 @@ namespace DroidBlankTest1
         private void UpdateListView()
         {
             ListAdapter = new ArrayAdapter<String>(this, Android.Resource.Layout.SimpleListItem1, itemList.ToArray());
-            ListView dirList = FindViewById<ListView>(Resource.Id.DirList);
+            ExpandableListView dirList = FindViewById<ExpandableListView>(Resource.Id.listView);
         }
 
         protected override void OnCreate(Bundle bundle)
@@ -118,7 +118,7 @@ namespace DroidBlankTest1
             long testStart = DateTime.Now.Ticks;
             base.OnCreate(bundle);
             RestController client = new RestController("dmadmin", "I8@#fbbq");
-            RestService home = client.Get<RestService>("http://10.0.12.31:8080/Rest/services", null);
+            RestService home = client.Get<RestService>("http://10.0.12.31:8080/rest/services", null);
             if (home == null)
             {
                 //WriteOutput("\nUnable to get Rest Service at: " + RestHomeUri + " check to see if the service is available.");

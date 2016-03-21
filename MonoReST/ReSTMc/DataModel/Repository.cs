@@ -714,8 +714,8 @@ namespace Emc.Documentum.Rest.DataModel
             // If the document is not already checked out, check it out.
             if (!doc.IsCheckedOut()) doc = doc.Checkout();
             RestDocument checkinDoc = NewDocument(doc.getAttributeValue("object_name").ToString());
-            if(!checkinOptions.pa.ContainsKey("format") {
-                checkinOptions.SetQuery("format", (dmFormatName == null || dmFormatName.Trim().Equals("")? doc.getAttributeValue("a_content_type") : dmFormatName);
+            if(!checkinOptions.pa.ContainsKey("format")) {
+                checkinOptions.SetQuery("format", doc.getAttributeValue("a_content_type"));
             }
             if(!checkinOptions.pa.ContainsKey("page")) {
                 checkinOptions.SetQuery("page", 0);
@@ -724,7 +724,7 @@ namespace Emc.Documentum.Rest.DataModel
                 checkinOptions.SetQuery("primary", true);
             }
             
-            return doc.CheckinMinor(doc, contentStream, ObjectUtil.getMimeTypeFromFileName(file.Name), checkinOptions);
+            return doc.CheckinMinor(doc, contentStream, mimeType, checkinOptions);
         }
 
         /// <summary>

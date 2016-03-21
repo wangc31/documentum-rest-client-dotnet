@@ -5,31 +5,10 @@
     android:layout_height="match_parent"
     android:minWidth="25px"
     android:minHeight="25px">
-    <TextView
-        android:text="Enter a Phoneword:"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/textView1" />
-    <EditText
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/PhoneNumberText"
-        android:text="1-855-XAMARIN" />
-    <Button
-        android:text="Translate"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/TranslateButton" />
-    <Button
-        android:text="Call"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/CallButton" />
-    <ListView
+    <ExpandableListView
         android:minWidth="25px"
         android:minHeight="25px"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:id="@+id/DirList" />
+        android:id="@+id/listView" />
 </LinearLayout>
