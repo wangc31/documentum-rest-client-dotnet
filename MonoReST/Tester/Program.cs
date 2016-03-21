@@ -34,102 +34,37 @@ namespace Emc.Documentum.Rest.Test
             bool useDefault = config != null && Boolean.Parse(config["useDefaults"]);
             SetupTestData(useDefault);
 
-            String line = PrintMenu();
-            while (!(line.Equals("x") || line.Equals("exit")))
+            Arguments cmd = PrintMenu();
+            while (!cmd.Exit())
             {
-                if (line.Equals("exit")) break;
-                String test = "";
-                if (line != null && !line.Trim().Equals(""))
+                string next = cmd.Next();
+                try
                 {
-                    if (line.IndexOf(" ") > 0)
-                    {
-                        test = line.Substring(0, line.IndexOf(" "));
-                    }
-                    else
-                    {
-                        test = line;
-                    }
-                }
-                if (!test.Equals(""))
-                {
-                    String cmd = line.Substring(line.IndexOf(" ") + 1);
-                    if (cmd.Equals(line)) cmd = "";
-
-                    //Mock of setting up an array for properties to be passed
-                    var properties = new List<KeyValuePair<string, string>>();
-                    properties.Add(new KeyValuePair<string, string>("object_name", @"LIKE '%Test%'"));
-                    properties.Add(new KeyValuePair<string, string>("object_type", "dm_document"));
-
-                    switch (test.ToLower())
+                    switch (next.ToLower())
                     {
                         case "dql":
-                            DqlQueryTest.Run(client, RestHomeUri, cmd, 20, false, repositoryName, printResult);
+                            int itemsPerPage = cmd.IsNextInt() ? cmd.NextInt() : 10;
+                            bool pause = cmd.IsNextBool() ? cmd.NextBool() : false;
+                            string dql = cmd.ReadToEnd();
+                            DqlQueryTest.Run(client, RestHomeUri, dql, itemsPerPage, pause, repositoryName, printResult);
                             break;
-
                         case "test": // will run the conditions for Processdoc
-                            //if (cmd == null || cmd.Trim().Equals("") || cmd.Equals(test))
-                            //{
-                            //    Console.WriteLine("Path argument is required");
-                            //    break;
-                            //}
-                            // Creates documents, assigns them to a temp holding area, then creates parent/child folders
-                            // and assigns the documents randomly. Cleans up the temp folder upon completion.
-                            int numDocs = getInputNumber("How many documents do you want to create and assign?", 10);
-                            int threadCount = getInputNumber("How many threads would you like to run?", 1);
-                            long start = DateTime.Now.Ticks;
-                            if (threadCount >= 1)
-                            {
-                                for (int i = 0; i < threadCount; i++)
-                                {
-                                    UseCaseTests aTest = new UseCaseTests(new RestController(username, password),
-                                            RestHomeUri, repositoryName, threadCount > 1 ? true : false, "/Temp/Test-" + DateTime.Now.Ticks, i, numDocs);
-                                    ThreadStart job = new ThreadStart(aTest.Start);
-                                    new Thread(job).Start();
-                                }
-                                Console.WriteLine("\n\n " + numDocs + " documents will be imported and randomly assigned to " + threadCount + " parentFolder(s), 5 childFolders for each of "
-                                + threadCount + " threads");
-                            }
-                            else
-                            {
-                                UseCaseTests aTest = new UseCaseTests(new RestController(username, password),
-                                        RestHomeUri, repositoryName, threadCount > 1 ? true : false, "/Temp/Test-" + DateTime.Now.Ticks, 1, numDocs);
-                                aTest.Start();
-                            }
+                            testProcessDocs();
                             break;
-
                         case "getmimetype":
-                            Console.WriteLine("Mime-Type for " + cmd + " is:" + ObjectUtil.getMimeTypeFromFileName(cmd));
+                            Console.WriteLine("Mime-Type for " + cmd.Peak() + " is:" + ObjectUtil.getMimeTypeFromFileName(cmd.Peak()));
                             break;
                         case "getformat":
-                            Console.WriteLine("Format for " + cmd + " is:" + ObjectUtil.getDocumentumFormatForFile(cmd));
+                            Console.WriteLine("Format for " + cmd.Peak() + " is:" + ObjectUtil.getDocumentumFormatForFile(cmd.Peak()));
                             break;
                         case "cls":
                             Console.Clear();
                             break;
                         case "batch":
-                            // In progress, not useable as of yet
-                            Batch batch = new Batch();
-                            batch.Description = "test";
-                            batch.Transactional = false;
-                            batch.Sequential = false;
-                            batch.OnError = "CONTINUE";
-                            batch.ReturnRequest = true;
-                            Operation op = batch.GetNewOperation();
-                            op.addHeader("HeaderName", "HeaderValue");
-                            op.Id = "1";
-                            op.URI = "http://something.here.com/blah";
-                            List<Operation> ops = new List<Operation>();
-                            ops.Add(op);
-                            batch.Operations = ops;
-
-                            JsonDotnetJsonSerializer ser = new JsonDotnetJsonSerializer();
-                            Console.WriteLine(ser.Serialize(batch));
-                            DefaultDataContractJsonSerializer dser = new DefaultDataContractJsonSerializer();
-                            Console.WriteLine(dser.Serialize(batch));
+                            Console.WriteLine("Development in progress, not useable as of yet");
                             break;
-                        case "timezone":
-                            Search options = new Search();
-                            options.TimeZone = cmd;
+                        case "search":
+                            Console.WriteLine("Development in progress, not useable as of yet");
                             break;
                         case "reconfig":
                             SetupTestData(false);
@@ -137,18 +72,62 @@ namespace Emc.Documentum.Rest.Test
                         default:
                             Console.WriteLine("Nothing entered");
                             break;
-
                     }
                 }
-                if (!test.Equals("cls"))
+                catch (Exception e)
                 {
+                    Console.WriteLine("Got exception in test: " + e.Message + "\r\n" + e.StackTrace);
+                }
+                
+                if (!next.Equals("cls"))
+                {
+                    Console.WriteLine("Press any key to continue...\r\n");
                     Console.ReadKey();
                 }
-                line = PrintMenu();
+                cmd = PrintMenu();
             }
+        }
 
+        private static void testProcessDocs()
+        {
+            //if (cmd == null || cmd.Trim().Equals("") || cmd.Equals(test))
+            //{
+            //    Console.WriteLine("Path argument is required");
+            //    break;
+            //}
+            // Creates documents, assigns them to a temp holding area, then creates case/request folders
+            // and assigns the documents randomly. Cleans up the temp folder upon completion.
+            int numDocs = getInputNumber("How many documents do you want to create and assign?", 10);
+            int threadCount = getInputNumber("How many threads would you like to run?", 1);
+            long start = DateTime.Now.Ticks;
+            if (threadCount >= 1)
+            {
+                for (int i = 0; i < threadCount; i++)
+                {
+                    UseCaseTests aTest = new UseCaseTests(new RestController(username, password),
+                            RestHomeUri, repositoryName, threadCount > 1 ? true : false, "/Temp/Test-" + DateTime.Now.Ticks, i, numDocs);
+                    ThreadStart job = new ThreadStart(aTest.Start);
+                    new Thread(job).Start();
+                }
+                Console.WriteLine("\n\n " + numDocs + " documents will be imported and randomly assigned to " + threadCount + " cases, 5 requests for each of "
+                + threadCount + " threads");
+            }
+            else
+            {
+                UseCaseTests aTest = new UseCaseTests(new RestController(username, password),
+                        RestHomeUri, repositoryName, threadCount > 1 ? true : false, "/Temp/Test-" + DateTime.Now.Ticks, 1, numDocs);
+                aTest.Start();
+            }
+        }
 
-
+        private static string getPrimaryCommand(String line)
+        {
+            String test = "";
+            if (!String.IsNullOrWhiteSpace(line))
+            {
+                test = line.IndexOf(" ") > 0 ? line.Substring(0, line.IndexOf(" ")) : line;
+            }
+            return test;
         }
 
         private static int getInputNumber(string title, int value)
@@ -173,32 +152,28 @@ namespace Emc.Documentum.Rest.Test
             return value;
         }
 
-        public static String PrintMenu()
+        public static Arguments PrintMenu()
         {
             Console.WriteLine("Usage: ");
-            Console.WriteLine("\treconfig - prompt for re-entering configuration information.");
-            Console.WriteLine("\tdql {dqlquery} - Executes a DQL query and prints the results.");
-            Console.WriteLine("\tgetmimetype {filename} - returns the mimetype of the given fileName.");
-            Console.WriteLine("\tgetformat {filename} - returns the documentum format name of the"
-                            + "\n\t\tgiven fileName.");
-            Console.WriteLine("\tsearch - prompts for search criteria and location then runs the "
-                            + "\n\t\tsearch query.");
-            Console.WriteLine("\ttest - Runs the end to end tests with optional."
-                            + "\n\t\tthreads and number of documents. The old "
-                            + "\n\t\tProcessdoc command will do the same test.");
-
-
-
-            //Console.WriteLine("\tcls - Clear the console");
-            Console.WriteLine("\texit - Exit the Test");
+            Console.WriteLine("\treconfig \n\t\t- prompt for re-entering configuration information.");
+            Console.WriteLine("\tdql [<itemsPerPage> <pauseBetweenPages>] <dqlQuery>" 
+                            + "\n\t\t- Executes a DQL query and prints the results."
+                            + "\n\t\t  Example: dql 10 false select * from dm_cabinet");
+            Console.WriteLine("\tgetmimetype <filename> \n\t\t- Returns the mimetype of the given fileName.");
+            Console.WriteLine("\tgetformat <filename> \n\t\t- Returns the documentum format name of the given fileName.");
+            Console.WriteLine("\tsearch \n\t\t- Prompts for search criteria and location then runs the search query.");
+            Console.WriteLine("\ttest \n\t\t- Runs the end to end tests with optional tthreads and number of documents. "
+                            + "\n\t\t  The old Processdoc command will do the same test.");
+            Console.WriteLine("\tcls \n\t\t- Clear the console");
+            Console.WriteLine("\texit \n\t\t- Exit the Test");
             Console.Write("\r\n\nCommand > ");
 
-            return getLineOfInput();
+            return new Arguments(getLineOfInput().Trim());
         }
 
-        private static String getLineOfInput()
+        private static string getLineOfInput()
         {
-            String line = Console.ReadLine();
+            string line = Console.ReadLine();
             Console.WriteLine();
             return line;
         }
