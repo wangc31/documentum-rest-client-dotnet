@@ -48,20 +48,23 @@ namespace Emc.Documentum.Rest.DataModel
 
             // This is meant to avoid duplication extensions while also ensuring that
             // known formats get a proper extension if they do not have one.
-            String fileExtension = fileName.Substring(fileName.LastIndexOf('.') + 1);
-            if (fileName.ToLower().EndsWith(dosExtension.ToLower()))
+            String fileExtension = fileName.Contains('.') ? fileName.Substring(fileName.LastIndexOf('.') + 1) : "";
+            if (dosExtension != null && fileName.ToLower().EndsWith(dosExtension.ToLower()))
             {
+                // The extension is already on the object name, do not append anthing
                 fileExtension = "";
             } else {
                 if(dosExtension != null && !dosExtension.Trim().Equals("")) {
                     fileExtension = dosExtension;
+                } else {
+                    fileExtension = ObjectUtil.getDosExtensionFromFormat(getAttributeValue("full_format").ToString());
                 }
             }
 
             fileName = ObjectUtil.getSafeFileName(fileName);
             // Ensure file extension is not already there
 
-            string fullPath = Path.Combine(Path.GetTempPath(), fileName + "." + fileExtension);
+            string fullPath = Path.Combine(Path.GetTempPath(), fileName + ( (fileExtension == null || fileExtension.Equals("")) ? "" : "." + fileExtension) );
 
             using (Stream media = DownloadContentMediaStream())
             {

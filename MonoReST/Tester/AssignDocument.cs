@@ -20,7 +20,7 @@ namespace Emc.Documentum.Rest.CustomModel
         /// </summary>
         public string ParentId { get; set; }
         /// <summary>
-        /// The requestId the document will be assigned to
+        /// The childId the document will be assigned to
         /// </summary>
         public string ChildId { get; set; }
 
@@ -29,12 +29,12 @@ namespace Emc.Documentum.Rest.CustomModel
         /// </summary>
         /// <param name="documentId"></param>
         /// <param name="parentId"></param>
-        /// <param name="requestId"></param>
+        /// <param name="childId"></param>
 
-        public AssignDocument(string documentId, string parentId, string requestId) {
+        public AssignDocument(string documentId, string parentId, string childId) {
             DocumentId = documentId;
             ParentId = parentId;
-            ChildId = requestId;
+            ChildId = childId;
         }
 
         /// <summary>

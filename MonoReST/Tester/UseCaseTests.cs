@@ -65,7 +65,7 @@ namespace Emc.Documentum.Rest.Test
             this.numDocs = numDocs;
             this.testStart = DateTime.Now;
             this.testPrefix = testStart.ToString("yyyyMMddhhmmss")+"-"+threadNum;
-            this.parentFolderId = "CASE-" + testPrefix; // new Random().Next(0, 5); ;
+            this.parentFolderId = "PARENT-" + testPrefix; // new Random().Next(0, 5); ;
             client.Logger = new LoggerFacade("RestServices", "NA", parentFolderId, parentFolderId);
         }
 
@@ -668,7 +668,7 @@ namespace Emc.Documentum.Rest.Test
             }
             Folder parentFolder   = repository.getFolderByPath(ProcessBasePath + parentFolderId);
             repository.CloseFolderAndStartRetention(Repository.RecordType.MLAT, parentFolder, DateTime.Now);
-            WriteOutput("\t\t[SetCloseCondition] - Closing CASE " + parentFolder.getAttributeValue("object_name") + " Declared as: " + Repository.RecordType.MLAT);
+            WriteOutput("\t\t[SetCloseCondition] - Closing PARENT " + parentFolder.getAttributeValue("object_name") + " Declared as: " + Repository.RecordType.MLAT);
                 
         }
 
@@ -741,7 +741,7 @@ namespace Emc.Documentum.Rest.Test
                 List <Entry<OutlineAtomContent>> entries = versions.Entries;
                 WriteOutput("\t\tCurrentDocumentVersion: " + doc.getRepeatingValuesAsString("r_version_label", ",") + " ID: " + doc.getAttributeValue("r_object_id").ToString());
                 WriteOutput("\t\tVersion Count Prior to Importing New Version:" + entries.Count);
-                doc = doc.Checkout();
+                if(!doc.IsCheckedOut()) doc = doc.Checkout();// Handles when you unwind during debugging and doc was checked out before.
                 if (doc.IsCheckedOut())
                 {
                     WriteOutput("\t\t[CheckOut] - Checked out document...");

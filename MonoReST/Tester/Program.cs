@@ -72,7 +72,7 @@ namespace Emc.Documentum.Rest.Test
                             //    Console.WriteLine("Path argument is required");
                             //    break;
                             //}
-                            // Creates documents, assigns them to a temp holding area, then creates case/request folders
+                            // Creates documents, assigns them to a temp holding area, then creates parent/child folders
                             // and assigns the documents randomly. Cleans up the temp folder upon completion.
                             int numDocs = getInputNumber("How many documents do you want to create and assign?", 10);
                             int threadCount = getInputNumber("How many threads would you like to run?", 1);
@@ -86,7 +86,7 @@ namespace Emc.Documentum.Rest.Test
                                     ThreadStart job = new ThreadStart(aTest.Start);
                                     new Thread(job).Start();
                                 }
-                                Console.WriteLine("\n\n " + numDocs + " documents will be imported and randomly assigned to " + threadCount + " cases, 5 requests for each of "
+                                Console.WriteLine("\n\n " + numDocs + " documents will be imported and randomly assigned to " + threadCount + " parentFolder(s), 5 childFolders for each of "
                                 + threadCount + " threads");
                             }
                             else

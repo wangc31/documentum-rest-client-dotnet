@@ -827,7 +827,7 @@ namespace Emc.Documentum.Rest.DataModel
         }
         
         /// <summary>
-        /// Used to Close a case or request. To re-open, set closeDate = new DateTime() aka NullDate
+        /// Used to update the rentention condition date (close date) on a folder. To re-open, set closeDate = new DateTime() aka NullDate
         /// </summary>
         /// <param name="folderId"></param>
         /// <param name="closeDate"></param>
@@ -935,18 +935,15 @@ namespace Emc.Documentum.Rest.DataModel
         /// <returns>Folder</returns>
         public Folder getFolderByPath(string path)
         {
-            List<String> requestPathAndFolder = ObjectUtil.getPathAndFolderNameFromPath(path);
-            String parent = requestPathAndFolder[0];
-            String child = requestPathAndFolder[1];
             Folder folder = getFolderByQualification(
-                String.Format("dm_folder where folder('{0}') and object_name='{1}'", parent,
-                child), new FeedGetOptions { Inline = true, Links = true });
+                String.Format("dm_folder where any r_folder_path = '{0}'", 
+                path), new FeedGetOptions { Inline = true, Links = true });
             return folder;
         }
 
        /// <summary>
-         /// Exports a case and all associated files under that folder structre as a zip
-        /// objectId is the case foler r_object_id
+         /// Exports a Folder and all associated files under that folder structure as a zip
+        /// objectId is the folder's r_object_id
        /// </summary>
        /// <param name="folderPath"></param>
        /// <param name="zipFileName"></param>
