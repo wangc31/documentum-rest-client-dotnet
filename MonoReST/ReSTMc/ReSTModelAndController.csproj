@@ -53,24 +53,24 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="controller\Utility\LinkRelations.cs" />
     <Compile Include="DataModel\RestDocument.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="controller\Json\AbstractSerializer.cs" />
-    <Compile Include="controller\Json\DefaultDataContractJsonSerializer.cs" />
-    <Compile Include="controller\Json\JsonDotnetJsonSerializer.cs" />
-    <Compile Include="controller\Net\ReSTController.cs" />
-    <Compile Include="controller\Options\FeedGetOptions.cs" />
-    <Compile Include="controller\Options\FullTextQueryOptions.cs" />
-    <Compile Include="controller\Options\GenericOptions.cs" />
-    <Compile Include="controller\Options\Search.cs" />
-    <Compile Include="controller\Options\SingleGetOptions.cs" />
-    <Compile Include="controller\Utility\AtomUtil.cs" />
-    <Compile Include="controller\Utility\HttpUtil.cs" />
-    <Compile Include="controller\Utility\LoggerFacade.cs" />
-    <Compile Include="controller\Utility\MimeMapping.cs" />
-    <Compile Include="controller\Utility\ObjectUtil.cs" />
-    <Compile Include="controller\Utility\UriUtil.cs" />
+    <Compile Include="Controller\Utility\LinkRelations.cs" />
+    <Compile Include="Controller\Json\AbstractSerializer.cs" />
+    <Compile Include="Controller\Json\DefaultDataContractJsonSerializer.cs" />
+    <Compile Include="Controller\Json\JsonDotnetJsonSerializer.cs" />
+    <Compile Include="Controller\Net\RestController.cs" />
+    <Compile Include="Controller\Options\FeedGetOptions.cs" />
+    <Compile Include="Controller\Options\FullTextQueryOptions.cs" />
+    <Compile Include="Controller\Options\GenericOptions.cs" />
+    <Compile Include="Controller\Options\Search.cs" />
+    <Compile Include="Controller\Options\SingleGetOptions.cs" />
+    <Compile Include="Controller\Utility\AtomUtil.cs" />
+    <Compile Include="Controller\Utility\HttpUtil.cs" />
+    <Compile Include="Controller\Utility\LoggerFacade.cs" />
+    <Compile Include="Controller\Utility\MimeMapping.cs" />
+    <Compile Include="Controller\Utility\ObjectUtil.cs" />
+    <Compile Include="Controller\Utility\UriUtil.cs" />
     <Compile Include="CustomModel\AssignDocument.cs" />
     <Compile Include="DataModel\AuditEntry.cs" />
     <Compile Include="DataModel\Cabinet.cs" />
