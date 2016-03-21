@@ -811,7 +811,7 @@ namespace Emc.Documentum.Rest.DataModel
         /// <param name="folder"></param>
         /// <param name="closeDate"></param>
         /// <returns>List</returns>
-        public List<PersistentObject> CloseFolderAndStartRetention(RecordType type, Folder folder, DateTime closeDate) 
+        public List<PersistentObject> CloseCaseOrRequest(RecordType type, Folder folder, DateTime closeDate) 
         {
             FeedGetOptions opts = new FeedGetOptions { Inline = true, Links = true};
             
