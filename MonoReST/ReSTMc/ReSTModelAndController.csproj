@@ -71,7 +71,6 @@
     <Compile Include="Controller\Utility\MimeMapping.cs" />
     <Compile Include="Controller\Utility\ObjectUtil.cs" />
     <Compile Include="Controller\Utility\UriUtil.cs" />
-    <Compile Include="CustomModel\AssignDocument.cs" />
     <Compile Include="DataModel\AuditEntry.cs" />
     <Compile Include="DataModel\Cabinet.cs" />
     <Compile Include="DataModel\ContentMeta.cs" />
@@ -97,5 +96,8 @@
   <ItemGroup>
     <None Include="libs\Newtonsoft.Json.dll" />
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="CustomModel\" />
   </ItemGroup>
 </Project>
