@@ -47,7 +47,10 @@ namespace Emc.Documentum.Rest.Net
         /// <param name="input"></param>
         /// <returns></returns>
         public override T ReadObject<T>(Stream input)
-        {           
+        {
+            //StreamReader sr = new StreamReader(input);
+            //string text = sr.ReadToEnd();
+            //input.Position = 0;
             JsonReader reader = new JsonTextReader(new StreamReader(input));
             T obj = SERIALIZER.Deserialize<T>(reader);
             return obj;

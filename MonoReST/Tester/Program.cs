@@ -11,6 +11,7 @@ using Emc.Documentum.Rest.Http.Utility;
 using System.IO;
 using System.Collections.Specialized;
 using System.Windows.Forms;
+using Emc.Documentum.Rest.DataModel.D2;
 
 namespace Emc.Documentum.Rest.Test
 {
@@ -69,6 +70,9 @@ namespace Emc.Documentum.Rest.Test
                         case "reconfig":
                             SetupTestData(false);
                             break;
+                        case "d2tests":
+                            Console.WriteLine("D2 Rest Services available: " + d2Tests());
+                            break;
                         default:
                             Console.WriteLine("Nothing entered");
                             break;
@@ -86,6 +90,68 @@ namespace Emc.Documentum.Rest.Test
                 }
                 cmd = PrintMenu();
             }
+        }
+
+        private static bool d2Tests()
+        {
+            bool result = true;
+
+            
+            client = new RestController(username, password);
+            RestService home = client.Get<RestService>(RestHomeUri, null);
+            if (home == null)
+            {
+                string msg = "\nUnable to get Rest Service at: " + RestHomeUri + " check to see if the service is available.";
+                Console.WriteLine(msg);
+                throw new Exception(msg);
+            }
+            home.SetClient(client);
+            Repository repository = home.GetRepository(repositoryName);
+            if (repository.isD2Rest())
+            {
+                /* Get D2 Configs */
+                D2Configurations d2configs = repository.GetD2Configurations(null);
+
+                /* Get the Search Configurations from D2 Config */
+                SearchConfigurations searchConfigs = d2configs.getSearchConfigurations();
+                for (int i = 0; i < searchConfigs.Entries.Count; i++)
+                {
+                    /* For Each Search configuration, get the entry link */
+                    SearchConfigLink scl = searchConfigs.Entries[i];
+                    Console.WriteLine("SearchConfigTitle=" + scl.title + ", SearchConfigId=" + scl.id + " LinkSrc: " + scl.content.Src);
+                    /* Ouput SearchConfiguration information for each SearchConfigLink */
+                    SearchConfiguration sc = searchConfigs.getSearchConfiguration(scl.content.Src);
+                    Console.WriteLine(sc.ToString());
+
+                }
+
+                /* Get the Profile Configurations from D2 Config */
+                ProfileConfigurations profileConfigs = d2configs.getProfileConfigurations();
+                for (int i = 0; i < profileConfigs.Entries.Count; i++)
+                {
+                    /* For each profile configuraton get the entry link */
+                    ProfileConfigLink pcl = profileConfigs.Entries[i];
+                    Console.WriteLine("\n\nProfileConfigTitle=" + pcl.title + ", ProfileConfigId=" + pcl.id + " LinkSrc: " + pcl.content.Src);
+                    /* Output ProfileConfiguration information for each ProfileConfigLink */
+                    ProfileConfiguration pc = profileConfigs.getProfileConfiguration(pcl.content.Src);
+                    Console.WriteLine(pc.ToString());
+                    D2Document d2doc = repository.ImportNewD2Document(new FileInfo(@"c:\SamplesToImport\readme.txt"), "FirstD2ProfileFromRestFramework", "/Temp", pc);
+                    if (d2doc != null)
+                    {
+                        Console.WriteLine("\n\nNew D2Document: \n" + d2doc.ToString());
+                    }
+                    else
+                    {
+                        Console.WriteLine("Creation failed!");
+                        result = false;
+                    }
+                }
+
+            }
+            else {
+                Console.WriteLine("You do not appear to be running the D2FS-Rest Services");
+                result = false; }
+            return result;
         }
 
         private static void testProcessDocs()

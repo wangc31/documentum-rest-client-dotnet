@@ -8,6 +8,7 @@ using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
 using System.Runtime.InteropServices;
+using Emc.Documentum.Rest.DataModel.D2;
 
 namespace Emc.Documentum.Rest.DataModel
 {

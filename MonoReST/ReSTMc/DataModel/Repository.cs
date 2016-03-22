@@ -9,6 +9,7 @@ using System.Runtime.Serialization;
 using System.Net.Http;
 using System.IO;
 using System.IO.Compression;
+using Emc.Documentum.Rest.DataModel.D2;
 
 namespace Emc.Documentum.Rest.DataModel
 {
@@ -62,6 +63,22 @@ namespace Emc.Documentum.Rest.DataModel
                 this.Links,
                 LinkRelations.CURRENT_USER.Rel,
                 options);
+        }
+
+        public D2Configurations GetD2Configurations(SingleGetOptions options)
+        {
+            return Client.GetSingleton<D2Configurations>(
+                this.Links,
+                LinkRelations.D2_CONFIGURATION.Rel,
+                options);
+        }
+
+        public bool isD2Rest()
+        {
+            string d2ConfigLink = LinkRelations.FindLinkAsString(
+                Links,
+                LinkRelations.D2_CONFIGURATION.Rel);
+            return d2ConfigLink != null;
         }
 
         /// <summary>
@@ -761,6 +778,37 @@ namespace Emc.Documentum.Rest.DataModel
             return newDocument;
         }
 
+        public D2Document ImportNewD2Document(FileInfo file, string documentName, string repositoryPath, ProfileConfiguration profile)
+        {
+            //if (!repositoryPath.StartsWith("/")) throw new Exception("Repository path " + repositoryPath + " is not valid."
+            //     + " The path must be a fully qualified path");
+            //Folder importFolder = getOrCreateFolderByPath(repositoryPath);
+            //if (importFolder == null) throw new Exception("Unable to fetch or create folder by path: " + repositoryPath);
+
+            D2Document newDocument = new D2Document();
+            newDocument.setAttributeValue("object_name", documentName);
+            newDocument.setAttributeValue("object_type", "dm_document");
+            newDocument.Profile = profile;
+            newDocument.setAttributeValue("d2_configuration", profile);
+            GenericOptions importOptions = new GenericOptions();
+            importOptions.SetQuery("format", ObjectUtil.getDocumentumFormatForFile(file.Extension));
+            D2Document created = ImportD2DocumentWithContent(newDocument, file.OpenRead(), ObjectUtil.getMimeTypeFromFileName(file.Name), importOptions);
+
+            return newDocument;
+        }
+
+        public D2Document ImportD2DocumentWithContent(D2Document newObj, Stream otherPartStream, string otherPartMime, GenericOptions options)
+        {
+            Dictionary<Stream, string> otherParts = new Dictionary<Stream, string>();
+            otherParts.Add(otherPartStream, otherPartMime);
+            return Client.Post<D2Document>(
+                this.Links,
+                LinkRelations.OBJECT_CREATION.Rel,
+                newObj,
+                otherParts,
+                options);
+        }
+
         public string getRepositoryUri()
         {
             return LinkRelations.FindLinkAsString(this.Links, LinkRelations.SELF.Rel);
@@ -1092,6 +1140,7 @@ namespace Emc.Documentum.Rest.DataModel
                 ZipArchiveEntry zippedFile = archive.CreateEntryFromFile(fileToZip.FullName, pathInZip);
             }
         }
+
     } // End Repository Class
 
     /// <summary>

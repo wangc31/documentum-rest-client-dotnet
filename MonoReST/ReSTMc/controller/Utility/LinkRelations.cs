@@ -97,8 +97,10 @@ namespace Emc.Documentum.Rest.Http.Utility
         public static LinkRelations CHILD_LINKS = new LinkRelations("child-links", true);
 
         /********************BEGIN D2 REST LINK RELATIONS ******************************/
-        public static LinkRelations D2_CONFIGURATION = new LinkRelations("d2-configurations");
-        public static LinkRelations CREATION_PROFILES = new LinkRelations("creation-profiles", true);
+        public static LinkRelations D2_CONFIGURATION = new LinkRelations("d2-configurations", true);
+        public static LinkRelations SEARCH_CONFIGURATION = new LinkRelations("search-configuration", true);
+        public static LinkRelations PROFILE_CONFIGURATION = new LinkRelations("profile-configuration", true);
+        public static LinkRelations CREATION_PROFILES = new LinkRelations("creation-profile", true);
         public static LinkRelations CREATION_PROFILE = new LinkRelations("creation-profile", true);
         public static LinkRelations TYPE_CONFIGURATIONS = new LinkRelations("type-configurations", true);
         public static LinkRelations TYPE_CONFIGURATION = new LinkRelations("type-configuration", true);
@@ -107,10 +109,11 @@ namespace Emc.Documentum.Rest.Http.Utility
         public static LinkRelations DOCUMENT_TEMPLATE = new LinkRelations("document-template", true);
         public static LinkRelations COMMENTS = new LinkRelations("comments", true);
         public static LinkRelations COMMENT = new LinkRelations("comment", true);
-        public static LinkRelations TASK_LIST = new LinkRelations("task-list", true);
+        public static LinkRelations TASK_LIST = new LinkRelations("tasklist-d2", true);
+
         /** Temporary until Only on the NA/4.6 Version, once extensibility is in place. Apparantly some
         of the core rest link relations like checkout/checkin/cancelcheckout will be gone in D2 rest? */
-        public static LinkRelations PREVIEW_URLs = new LinkRelations("preview-urls", true);
+        public static LinkRelations PREVIEW_URLs = new LinkRelations("http://identifiers.com/com/linkrel/preview-urls", true);
 
 
 
@@ -127,7 +130,12 @@ namespace Emc.Documentum.Rest.Http.Utility
         {
             get
             {
-                return isDocumentum ? (PREFIX + rawRel) : rawRel;
+                String sRel = rawRel;
+                if (isDocumentum)
+                {
+                    sRel = PREFIX + rawRel;
+                }
+                return sRel;
             }
         }
     
