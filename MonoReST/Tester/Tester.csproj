@@ -75,9 +75,9 @@
     <None Include="reportXSL.xsl" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\ReSTMc\ReSTMc.csproj">
+    <ProjectReference Include="..\ReSTMc\ReSTModelAndController.csproj">
       <Project>{FC3F7008-D477-49ED-BEA8-B775541127E5}</Project>
-      <Name>ReSTMc</Name>
+      <Name>ReSTModelAndController</Name>
     </ProjectReference>
   </ItemGroup>
 </Project>
